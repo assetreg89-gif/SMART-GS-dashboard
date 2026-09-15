@@ -3,7 +3,7 @@ import { Search, Filter, Edit3, Trash2, CheckCircle2, Clock, XCircle, Lock, Cale
 import { JENIS_SURAT_OPTIONS } from '../utils/letterHelper';
 import { exportToExcel } from '../utils/excelExporter';
 
-export default function PublicMonitoring({ letters, onEditRequest, onDeleteRequest, onOpenRequestModal }) {
+export default function PublicMonitoring({ letters, onEditRequest, onDeleteRequest, onOpenRequestModal, onOpenExportModal }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedJenis, setSelectedJenis] = useState('ALL');
   const [selectedStatus, setSelectedStatus] = useState('ALL');
@@ -138,7 +138,7 @@ export default function PublicMonitoring({ letters, onEditRequest, onDeleteReque
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
             <button
-              onClick={() => exportToExcel(filteredLetters, 'DigiLetter_Reg3_Pengajuan_Surat.xlsx')}
+              onClick={onOpenExportModal}
               className="btn"
               style={{
                 background: '#16a34a',
@@ -154,7 +154,7 @@ export default function PublicMonitoring({ letters, onEditRequest, onDeleteReque
                 alignItems: 'center',
                 gap: '0.5rem'
               }}
-              title="Unduh seluruh data tabel ke format Excel (.xlsx)"
+              title="Unduh data agenda surat ke format Excel (.xlsx)"
             >
               <FileSpreadsheet size={16} />
               Export ke Excel (.xlsx)

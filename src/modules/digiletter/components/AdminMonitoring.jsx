@@ -3,7 +3,7 @@ import { ShieldCheck, CheckCircle2, Clock, XCircle, Edit3, Trash2, Hash, Calenda
 import { isWorkday } from '../utils/letterHelper';
 import { exportToExcel } from '../utils/excelExporter';
 
-export default function AdminMonitoring({ letters, onOpenApprovalModal, onEditRequest, onDeleteRequest, onOpenRequestModal }) {
+export default function AdminMonitoring({ letters, onOpenApprovalModal, onEditRequest, onDeleteRequest, onOpenRequestModal, onOpenExportModal }) {
   const [filterDate, setFilterDate] = useState('');
 
   // Kelompokkan data per tanggal TTD & urutkan dari nomor slot/agenda terbanyak/terbaru ke terlama
@@ -84,7 +84,7 @@ export default function AdminMonitoring({ letters, onOpenApprovalModal, onEditRe
             </button>
 
             <button
-              onClick={() => exportToExcel(filteredLetters, 'DigiLetter_Reg3_Admin_Export.xlsx')}
+              onClick={onOpenExportModal}
               className="btn"
               style={{
                 background: '#16a34a',
@@ -100,7 +100,7 @@ export default function AdminMonitoring({ letters, onOpenApprovalModal, onEditRe
                 alignItems: 'center',
                 gap: '0.5rem'
               }}
-              title="Unduh seluruh data tabel admin ke format Excel (.xlsx)"
+              title="Unduh data agenda surat ke format Excel (.xlsx)"
             >
               <FileSpreadsheet size={16} />
               Export ke Excel (.xlsx)

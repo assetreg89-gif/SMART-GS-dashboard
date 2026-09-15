@@ -72,7 +72,7 @@ function OverviewDashboard({ onNavigate }) {
           width: '100%'
         }}>
           {/* Card 1 (Left): TLT Space Hub */}
-          <div className="portal-module-card">
+          <div className="portal-module-card" onClick={() => onNavigate('tlt-space-hub')}>
             <div>
               {/* Card Header */}
               <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '1rem', marginBottom: '1.25rem' }}>
@@ -111,14 +111,14 @@ function OverviewDashboard({ onNavigate }) {
             </div>
 
             {/* Solid Red CTA Button */}
-            <button className="portal-cta-btn" onClick={() => onNavigate('tlt-space-hub')} style={{ fontSize: '1rem', fontWeight: 800 }}>
+            <div className="portal-cta-btn" style={{ fontSize: '1rem', fontWeight: 800 }}>
               <span>Akses TLT Space Hub</span>
               <ArrowRight size={18} className="cta-arrow" />
-            </button>
+            </div>
           </div>
 
           {/* Card 2 (Right): Digiletter Regional 3 */}
-          <div className="portal-module-card">
+          <div className="portal-module-card" onClick={() => onNavigate('digiletter')}>
             <div>
               {/* Card Header */}
               <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '1rem', marginBottom: '1.25rem' }}>
@@ -157,10 +157,10 @@ function OverviewDashboard({ onNavigate }) {
             </div>
 
             {/* Solid Red CTA Button */}
-            <button className="portal-cta-btn" onClick={() => onNavigate('digiletter')} style={{ fontSize: '1rem', fontWeight: 800 }}>
+            <div className="portal-cta-btn" style={{ fontSize: '1rem', fontWeight: 800 }}>
               <span>Akses Digiletter</span>
               <ArrowRight size={18} className="cta-arrow" />
-            </button>
+            </div>
           </div>
         </div>
       </div>
@@ -188,7 +188,7 @@ export default function App() {
         <header className="app-header">
           <div className="navbar-container">
             {/* Logo & Brand */}
-            <div className="navbar-left" style={{ cursor: 'pointer' }} onClick={() => setActiveModule('overview')}>
+            <div className="navbar-left">
               <img src="/telkom-icon.png" alt="Telkom Indonesia" style={{ height: '36px', objectFit: 'contain' }} onError={(e) => { e.target.style.display = 'none'; }} />
               <div className="navbar-brand-info">
                 <span className="navbar-brand-title" style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>

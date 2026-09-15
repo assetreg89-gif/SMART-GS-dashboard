@@ -1,7 +1,8 @@
 import XLSX from 'xlsx-js-style';
+import { NATIONAL_HOLIDAYS } from './letterHelper';
 
 /**
- * Membersihkan dan mengonversi format tanggal menjadi DD/MM/YYYY
+ * Membersihkan dan mengonversi format tanggal menjadi format tanggal saja / DD/MM/YYYY
  */
 function formatFullDateStr(dateVal) {
   if (!dateVal) return '-';
@@ -32,30 +33,168 @@ function getCleanIsoDate(dateVal) {
 
 /**
  * Mengubah array data pengajuan surat menjadi file Excel (.xlsx) dengan WARNA DAN STYLE PERSIS TEMPLATE RESMI SEKDIV.
- * @param {Array} letters - List data pengajuan surat
- * @param {string} fileName - Nama file yang diunduh (default: DigiLetter_Reg_3_Agenda_Surat.xlsx)
+ * Mengalokasikan 3-5 slot agenda kosong untuk tanggal yang tidak memiliki pengajuan/surat.
  */
-export function exportToExcel(letters, fileName = 'DigiLetter_Reg_3_Agenda_Surat.xlsx') {
-  if (!letters || letters.length === 0) {
-    alert('Tidak ada data pengajuan surat untuk diekspor.');
-    return;
-  }
+export function exportToExcel(letters, fileName = 'DigiLetter_Reg_3_Agenda_Surat.xlsx', options = {}) {
+  if (!letters) letters = [];
 
-  // 0. Urutkan Data Secara Kronologis Ascending (Dari tanggal terlama YYYY-MM-DD ke terbaru)
-  const sortedLetters = [...letters].sort((a, b) => {
-    const dateA = getCleanIsoDate(a.tanggal_ttd || a.tanggal_pengajuan);
-    const dateB = getCleanIsoDate(b.tanggal_ttd || b.tanggal_pengajuan);
-    
-    if (dateA !== dateB) {
-      return dateA.localeCompare(dateB); // Ascending tanggal (Terlama -> Terbaru)
+  // Map data yang sudah ada berdasarkan no_agenda atau tanggal
+  const existingMap = new Map();
+  const datesWithLetters = new Set();
+
+  letters.forEach(item => {
+    const dateStr = getCleanIsoDate(item.tanggal_ttd || item.tanggal_pengajuan);
+    if (dateStr) datesWithLetters.add(dateStr);
+
+    if (item.no_agenda) {
+      existingMap.set(String(item.no_agenda), item);
     }
-    
-    const numA = typeof a.no_agenda === 'number' ? a.no_agenda : 999999;
-    const numB = typeof b.no_agenda === 'number' ? b.no_agenda : 999999;
-    return numA - numB; // Ascending no agenda
   });
 
-  // 1. Inisialisasi Sheet Baru
+  // Tentukan Rentang Tanggal Ekspor (jika tidak ada data, gunakan bulan berjalan)
+  let minDateObj = new Date();
+  let maxDateObj = new Date();
+
+  if (options.startDate && options.endDate) {
+    minDateObj = new Date(options.startDate + 'T00:00:00');
+    maxDateObj = new Date(options.endDate + 'T00:00:00');
+  } else if (letters.length > 0) {
+    const allDates = letters
+      .map(l => getCleanIsoDate(l.tanggal_ttd || l.tanggal_pengajuan))
+      .filter(Boolean)
+      .sort();
+    
+    if (allDates.length > 0) {
+      minDateObj = new Date(allDates[0] + 'T00:00:00');
+      maxDateObj = new Date(allDates[allDates.length - 1] + 'T00:00:00');
+    }
+  } else {
+    // Default 1 bulan berjalan
+    const now = new Date();
+    minDateObj = new Date(now.getFullYear(), now.getMonth(), 1);
+    maxDateObj = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+  }
+
+  // Helper menghitung urutan hari kerja sejak 1 Januari tahun tersebut
+  const getWorkdayIndexFromJan1 = (targetDateStr) => {
+    const d = new Date(targetDateStr + 'T00:00:00');
+    const targetYear = d.getFullYear();
+    const startOfYearObj = new Date(targetYear, 0, 1);
+    let count = 0;
+
+    let curr = new Date(startOfYearObj);
+    while (curr <= d) {
+      const y = curr.getFullYear();
+      const m = String(curr.getMonth() + 1).padStart(2, '0');
+      const dayNum = String(curr.getDate()).padStart(2, '0');
+      const dateStr = `${y}-${m}-${dayNum}`;
+      const dayOfWeek = curr.getDay();
+
+      if (dayOfWeek !== 0 && dayOfWeek !== 6 && !NATIONAL_HOLIDAYS.includes(dateStr)) {
+        count++;
+      }
+      curr.setDate(curr.getDate() + 1);
+    }
+    return count;
+  };
+
+  // Bangun daftar baris lengkap termasuk 5 slot kosong per hari kerja (Senin-Jumat)
+  const fullRows = [];
+
+  let curr = new Date(minDateObj);
+  while (curr <= maxDateObj) {
+    const year = curr.getFullYear();
+    const month = String(curr.getMonth() + 1).padStart(2, '0');
+    const day = String(curr.getDate()).padStart(2, '0');
+    const dateStr = `${year}-${month}-${day}`;
+    const dayOfWeek = curr.getDay(); // 0 = Sun, 6 = Sat
+
+    // Cek Hari Kerja (Bukan Sabtu, Minggu, atau Libur Nasional)
+    const isWorkingDay = dayOfWeek !== 0 && dayOfWeek !== 6 && !NATIONAL_HOLIDAYS.includes(dateStr);
+
+    if (isWorkingDay) {
+      const workdayIndex = getWorkdayIndexFromJan1(dateStr);
+      const baseSlotEnd = Math.max(5, workdayIndex * 5);
+      const baseSlotStart = baseSlotEnd - 4;
+
+      // Ambil HANYA surat yang SUDAH DISETUJUI (Approved) pada tanggal ini
+      const lettersOnDate = letters.filter(l => 
+        l.status === 'Disetujui' && getCleanIsoDate(l.tanggal_ttd || l.tanggal_pengajuan) === dateStr
+      );
+
+      // Urutkan surat pada tanggal ini (urutkan berdasarkan no_agenda)
+      lettersOnDate.sort((a, b) => 
+        String(a.no_agenda || '').localeCompare(String(b.no_agenda || ''), undefined, { numeric: true })
+      );
+
+      const processedIds = new Set();
+
+      // Hasilkan 5 slot reguler per hari kerja (misal 761, 762, 763, 764, 765)
+      for (let slot = baseSlotStart; slot <= baseSlotEnd; slot++) {
+        const slotStr = String(slot);
+        
+        // Cari surat yang secara spesifik bernilai slot ini atau belum terproses
+        let letter = lettersOnDate.find(l => String(l.no_agenda) === slotStr && !processedIds.has(l.id || String(l.no_agenda)));
+
+        if (!letter) {
+          // Jika tidak ada no_agenda persis, gunakan surat antrean di tanggal yang sama jika no_agenda miliknya tidak konflik dengan slot reguler lain
+          letter = lettersOnDate.find(l => !processedIds.has(l.id || String(l.no_agenda)) && (!l.no_agenda || String(l.no_agenda).includes('.') || Number(l.no_agenda) < baseSlotStart || Number(l.no_agenda) > baseSlotEnd));
+        }
+
+        if (letter) {
+          processedIds.add(letter.id || String(letter.no_agenda));
+          fullRows.push({
+            no_agenda: slot,
+            tanggal: dateStr,
+            display_tanggal: curr.getDate(),
+            jenis_surat: letter.jenis_surat || '',
+            kepada: letter.kepada || '',
+            nomor_surat: letter.nomor_surat || '',
+            perihal: letter.perihal || '',
+            takah: letter.takah || '',
+            pic: letter.pic || '',
+            keterangan: letter.keterangan || letter.status || ''
+          });
+        } else {
+          fullRows.push({
+            no_agenda: slot,
+            tanggal: dateStr,
+            display_tanggal: curr.getDate(),
+            jenis_surat: '',
+            kepada: '',
+            nomor_surat: '',
+            perihal: '',
+            takah: '',
+            pic: '',
+            keterangan: ''
+          });
+        }
+      }
+
+      // Jika masih ada sisa surat di tanggal ini (misal 760.1, 760.2), keluarkan secara urut di bawah slot 5
+      const remainingLetters = lettersOnDate.filter(l => !processedIds.has(l.id || String(l.no_agenda)));
+      if (remainingLetters.length > 0) {
+        remainingLetters.forEach(item => {
+          fullRows.push({
+            no_agenda: item.no_agenda,
+            tanggal: dateStr,
+            display_tanggal: curr.getDate(),
+            jenis_surat: item.jenis_surat || '',
+            kepada: item.kepada || '',
+            nomor_surat: item.nomor_surat || '',
+            perihal: item.perihal || '',
+            takah: item.takah || '',
+            pic: item.pic || '',
+            keterangan: item.keterangan || item.status || ''
+          });
+        });
+      }
+    }
+
+    curr.setDate(curr.getDate() + 1);
+  }
+
+  // Inisialisasi Sheet Baru
   const ws = {};
   
   // Style Definitions
@@ -65,7 +204,7 @@ export function exportToExcel(letters, fileName = 'DigiLetter_Reg_3_Agenda_Surat
   };
 
   const noteStyle = {
-    font: { name: 'Calibri', sz: 11, bold: true, italic: true, color: { rgb: 'C00000' } }, // Warna merah resmi
+    font: { name: 'Calibri', sz: 11, bold: true, italic: true, color: { rgb: 'C00000' } }, // Merah resmi
     alignment: { horizontal: 'left', vertical: 'center' }
   };
 
@@ -118,8 +257,7 @@ export function exportToExcel(letters, fileName = 'DigiLetter_Reg_3_Agenda_Surat
     'NOMOR SURAT',
     'PERIHAL',
     'TAKAH',
-    'PIC',
-    'KETERANGAN'
+    'PIC'
   ];
 
   // Helper memasukkan sel berpola
@@ -134,59 +272,54 @@ export function exportToExcel(letters, fileName = 'DigiLetter_Reg_3_Agenda_Surat
   // Baris 2: Catatan Merah
   setCell(1, 0, '*No Agenda diberi jarak 5 untuk setiap tanggal', noteStyle);
 
-  // Baris 3: Header 9 Kolom (Orange Peach)
+  // Baris 3: Header Kolom (Orange Peach)
   headers.forEach((h, colIdx) => {
     setCell(2, colIdx, h, headerStyle);
   });
 
-  // Baris 4: Tepat 1 Baris Band Abu-abu Persis Gambar
-  for (let c = 0; c < 9; c++) {
-    setCell(3, c, '', greyBandStyle);
+  // Baris 4: Tepat 1 Baris Band Abu-abu + Tahun 2026 pada kolom NOMOR SURAT (persis gambar)
+  for (let c = 0; c < 8; c++) {
+    setCell(3, c, c === 4 ? 2026 : '', c === 4 ? { ...greyBandStyle, font: { name: 'Calibri', sz: 11, bold: true, color: { rgb: 'C00000' } }, alignment: { horizontal: 'center' } } : greyBandStyle);
   }
 
-  // Baris 5 Seterusnya: Data Pengajuan Surat (Mulai index 4)
-  sortedLetters.forEach((item, idx) => {
+  // Baris 5 Seterusnya: Data Pengajuan & Baris Slot Kosong (Mulai index 4)
+  fullRows.forEach((item, idx) => {
     const rowIdx = 4 + idx;
-    const rawTgl = item.tanggal_ttd || item.tanggal_pengajuan;
-    const displayTgl = formatFullDateStr(rawTgl);
 
-    setCell(rowIdx, 0, item.no_agenda ?? '-', dataCenterStyle);
-    setCell(rowIdx, 1, displayTgl, dataCenterStyle);
-    setCell(rowIdx, 2, item.jenis_surat || '-', dataLeftStyle);
-    setCell(rowIdx, 3, item.kepada || '-', dataLeftStyle);
-    setCell(rowIdx, 4, item.nomor_surat || '-', dataLeftStyle);
-    setCell(rowIdx, 5, item.perihal || '-', dataLeftStyle);
-    setCell(rowIdx, 6, item.takah || '-', dataLeftStyle);
-    setCell(rowIdx, 7, item.pic || '-', dataLeftStyle);
-    setCell(rowIdx, 8, item.keterangan || item.status || '-', dataLeftStyle);
+    setCell(rowIdx, 0, item.no_agenda ?? '', dataCenterStyle);
+    setCell(rowIdx, 1, item.display_tanggal ?? '', dataCenterStyle);
+    setCell(rowIdx, 2, item.jenis_surat || '', dataLeftStyle);
+    setCell(rowIdx, 3, item.kepada || '', dataLeftStyle);
+    setCell(rowIdx, 4, item.nomor_surat || '', dataLeftStyle);
+    setCell(rowIdx, 5, item.perihal || '', dataLeftStyle);
+    setCell(rowIdx, 6, item.takah || '', dataLeftStyle);
+    setCell(rowIdx, 7, item.pic || '', dataLeftStyle);
   });
 
   // Range Sheet
-  const totalRows = 4 + sortedLetters.length;
-  ws['!ref'] = XLSX.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: totalRows - 1, c: 8 } });
+  const totalRows = 4 + fullRows.length;
+  ws['!ref'] = XLSX.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: totalRows - 1, c: 7 } });
 
-  // Merge Cell A1 & A2 across 9 columns
+  // Merge Cell A1 & A2 across 8 columns
   ws['!merges'] = [
-    { s: { r: 0, c: 0 }, e: { r: 0, c: 8 } },
-    { s: { r: 1, c: 0 }, e: { r: 1, c: 8 } }
+    { s: { r: 0, c: 0 }, e: { r: 0, c: 7 } },
+    { s: { r: 1, c: 0 }, e: { r: 1, c: 7 } }
   ];
 
   // Lebar Kolom Otomatis
   ws['!cols'] = [
     { wch: 14 }, // NO AGENDA
-    { wch: 16 }, // TANGGAL (DD/MM/YYYY)
+    { wch: 12 }, // TANGGAL (Angka Tanggal)
     { wch: 28 }, // JENIS SURAT
-    { wch: 32 }, // KEPADA
-    { wch: 35 }, // NOMOR SURAT
+    { wch: 30 }, // KEPADA
+    { wch: 38 }, // NOMOR SURAT
     { wch: 45 }, // PERIHAL
-    { wch: 16 }, // TAKAH
-    { wch: 20 }, // PIC
-    { wch: 22 }  // KETERANGAN
+    { wch: 18 }, // TAKAH
+    { wch: 20 }  // PIC
   ];
 
-  // Buat workbook & ekspor berkas
+  // Buat Workbook dan Unduh File
   const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Agenda Surat Sekdiv');
-
-  XLSX.writeFile(wb, fileName.endsWith('.xlsx') ? fileName : `${fileName}.xlsx`);
+  XLSX.utils.book_append_sheet(wb, ws, 'Agenda Surat Keluar DR3 2026');
+  XLSX.writeFile(wb, fileName);
 }

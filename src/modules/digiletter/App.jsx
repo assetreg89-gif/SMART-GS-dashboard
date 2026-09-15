@@ -16,6 +16,8 @@ import {
   deleteLetterFromSheets 
 } from './services/googleSheetsService';
 
+import ExportExcelModal from './components/ExportExcelModal';
+
 export default function App({ onBackHome }) {
   const [theme, setTheme] = useState(() => localStorage.getItem('digiletter_theme') || 'light');
   
@@ -40,6 +42,7 @@ export default function App({ onBackHome }) {
   
   const [selectedLetterForApproval, setSelectedLetterForApproval] = useState(null);
   const [isAdminLoginOpen, setIsAdminLoginOpen] = useState(false);
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
 
   const [toast, setToast] = useState({
     isOpen: false,
@@ -147,13 +150,13 @@ export default function App({ onBackHome }) {
     }
   };
 
-  // Hitung No. Agenda berdasarkan Tanggal TTD (EVP)
+  // Hitung No. Agenda berdasarkan Tanggal TTD (EVP) dengan Penanganan Sisipan (105.1, 105.2, dst.)
   const getNextAgendaNo = (targetDateStr) => {
     if (!targetDateStr) {
       const existingAgendas = letters
         .map(l => l.no_agenda)
-        .filter(n => typeof n === 'number' && !isNaN(n));
-      return existingAgendas.length === 0 ? 58 : Math.max(...existingAgendas) + 1;
+        .filter(n => Boolean(n) && n !== '-');
+      return existingAgendas.length === 0 ? '58' : `${parseInt(existingAgendas[0]) + 1}`;
     }
 
     const d = new Date(targetDateStr);
@@ -181,19 +184,29 @@ export default function App({ onBackHome }) {
       curr.setDate(curr.getDate() + 1);
     }
 
-    const baseSlotEnd = Math.max(5, workdayCount * 5);
+    const baseSlotEnd = Math.max(5, workdayCount * 5); // Contoh: Tanggal 15 -> slot 101 sampai 105
+    const slotStart = baseSlotEnd - 4;
 
-    const usedAgendas = new Set(letters.map(l => l.no_agenda).filter(Boolean));
-    let slot = baseSlotEnd - 4;
-    while (usedAgendas.has(slot) && slot <= baseSlotEnd) {
+    const usedAgendas = new Set(letters.map(l => String(l.no_agenda)).filter(Boolean));
+
+    // Cari slot reguler yang masih kosong antara (baseSlotEnd - 4) sampai baseSlotEnd
+    let slot = slotStart;
+    while (usedAgendas.has(String(slot)) && slot <= baseSlotEnd) {
       slot++;
     }
-    
+
+    // Jika 5 slot reguler pada tanggal TTD tersebut SUDAH PENUH:
     if (slot > baseSlotEnd) {
-      slot = Math.max(...Array.from(usedAgendas), baseSlotEnd) + 1;
+      const baseMaxAgenda = String(baseSlotEnd); // misal "105"
+      // Cari berapa banyak sisipan .1, .2 yang sudah ada untuk 105
+      let subIndex = 1;
+      while (usedAgendas.has(`${baseMaxAgenda}.${subIndex}`)) {
+        subIndex++;
+      }
+      return `${baseMaxAgenda}.${subIndex}`; // Mengembalikan 105.1, 105.2, dst.
     }
 
-    return slot;
+    return String(slot);
   };
 
   // Verifikasi / Approve oleh Admin Sekdiv
@@ -239,6 +252,7 @@ export default function App({ onBackHome }) {
             onEditRequest={(letter) => { setEditingLetter(letter); setIsRequestModalOpen(true); }}
             onDeleteRequest={handleDeleteRequest}
             onOpenRequestModal={() => { setEditingLetter(null); setIsRequestModalOpen(true); }}
+            onOpenExportModal={() => setIsExportModalOpen(true)}
           />
         ) : (
           <PublicMonitoring
@@ -246,6 +260,7 @@ export default function App({ onBackHome }) {
             onEditRequest={(letter) => { setEditingLetter(letter); setIsRequestModalOpen(true); }}
             onDeleteRequest={handleDeleteRequest}
             onOpenRequestModal={() => { setEditingLetter(null); setIsRequestModalOpen(true); }}
+            onOpenExportModal={() => setIsExportModalOpen(true)}
           />
         )}
       </main>
@@ -269,6 +284,12 @@ export default function App({ onBackHome }) {
         isOpen={isAdminLoginOpen}
         onClose={() => setIsAdminLoginOpen(false)}
         onLoginSuccess={handleAdminLoginSuccess}
+      />
+
+      <ExportExcelModal
+        isOpen={isExportModalOpen}
+        onClose={() => setIsExportModalOpen(false)}
+        letters={letters}
       />
     </div>
   );
