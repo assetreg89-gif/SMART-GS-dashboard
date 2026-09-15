@@ -172,81 +172,76 @@ export default function MonitoringCalendar({ bookings = [], rooms = [], isAdmin,
   const isSelectedDatePast = selectedDateStr < todayStr;
 
   return (
-    <div className="glass-card" style={{ padding: '1.5rem', marginBottom: '1.75rem', borderRadius: '16px' }}>
+    <div className="glass-card calendar-card">
       
       {/* Header Bar Kalender */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem', marginBottom: '1rem' }}>
-        <div>
+      <div className="calendar-header-wrapper">
+        <div className="calendar-header-title-box">
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <CalendarIcon size={20} style={{ color: 'var(--primary-red)' }} />
-            <h3 style={{ fontSize: '1.125rem', fontWeight: 700, color: 'var(--text-title)', margin: 0 }}>
+            <h3 className="calendar-title-text">
               Kalender Ketersediaan Ruangan
             </h3>
           </div>
-          <p style={{ fontSize: '0.8125rem', color: 'var(--text-muted)', margin: '0.25rem 0 0 0' }}>
-            💡 <strong>Klik kiri tanggal</strong> untuk melihat riwayat/ketersediaan • <strong>Klik kanan</strong> untuk buat peminjaman ruangan
+          <p className="calendar-subtitle-text">
+            💡 <strong>Klik kiri tanggal</strong> untuk melihat riwayat/ketersediaan • <strong>Klik kanan</strong> untuk buat peminjaman
           </p>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+        <div className="calendar-controls-bar">
           {/* Filter Lantai */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', background: 'var(--input-bg)', padding: '0.25rem', borderRadius: '8px', border: '1px solid var(--input-border)' }}>
+          <div className="calendar-floor-filters">
             <button
               onClick={() => setSelectedFloor('ALL')}
-              className={`btn ${selectedFloor === 'ALL' ? 'btn-primary' : 'btn-secondary'}`}
-              style={{ padding: '0.25rem 0.625rem', fontSize: '0.75rem', borderRadius: '6px' }}
+              className={`btn ${selectedFloor === 'ALL' ? 'btn-primary' : 'btn-secondary'} calendar-floor-btn`}
             >
-              Semua Lantai
+              Semua
             </button>
             <button
               onClick={() => setSelectedFloor('9')}
-              className={`btn ${selectedFloor === '9' ? 'btn-primary' : 'btn-secondary'}`}
-              style={{ padding: '0.25rem 0.625rem', fontSize: '0.75rem', borderRadius: '6px' }}
+              className={`btn ${selectedFloor === '9' ? 'btn-primary' : 'btn-secondary'} calendar-floor-btn`}
             >
               Lt. 9
             </button>
             <button
               onClick={() => setSelectedFloor('11')}
-              className={`btn ${selectedFloor === '11' ? 'btn-primary' : 'btn-secondary'}`}
-              style={{ padding: '0.25rem 0.625rem', fontSize: '0.75rem', borderRadius: '6px' }}
+              className={`btn ${selectedFloor === '11' ? 'btn-primary' : 'btn-secondary'} calendar-floor-btn`}
             >
               Lt. 11
             </button>
             <button
               onClick={() => setSelectedFloor('12')}
-              className={`btn ${selectedFloor === '12' ? 'btn-primary' : 'btn-secondary'}`}
-              style={{ padding: '0.25rem 0.625rem', fontSize: '0.75rem', borderRadius: '6px' }}
+              className={`btn ${selectedFloor === '12' ? 'btn-primary' : 'btn-secondary'} calendar-floor-btn`}
             >
               Lt. 12
             </button>
           </div>
 
           {/* Controls Navigasi Bulan */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <div className="calendar-month-nav">
             <button
               onClick={goToToday}
-              className="btn btn-secondary"
-              style={{ fontSize: '0.75rem', padding: '0.375rem 0.75rem' }}
+              className="btn btn-secondary calendar-today-btn"
             >
               Hari Ini
             </button>
-            <div style={{ display: 'flex', alignItems: 'center', background: 'var(--input-bg)', borderRadius: '8px', border: '1px solid var(--input-border)' }}>
+            <div className="calendar-month-selector">
               <button
                 onClick={prevMonth}
                 title="Bulan Sebelumnya"
-                style={{ background: 'none', border: 'none', color: 'var(--text-main)', padding: '0.375rem 0.5rem', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                className="calendar-nav-arrow"
               >
-                <ChevronLeft size={18} />
+                <ChevronLeft size={17} />
               </button>
-              <span style={{ fontSize: '0.875rem', fontWeight: 700, minWidth: '130px', textAlign: 'center', color: 'var(--text-title)' }}>
+              <span className="calendar-month-label">
                 {monthNames[month]} {year}
               </span>
               <button
                 onClick={nextMonth}
                 title="Bulan Selanjutnya"
-                style={{ background: 'none', border: 'none', color: 'var(--text-main)', padding: '0.375rem 0.5rem', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                className="calendar-nav-arrow"
               >
-                <ChevronRight size={18} />
+                <ChevronRight size={17} />
               </button>
             </div>
           </div>
@@ -259,169 +254,154 @@ export default function MonitoringCalendar({ bookings = [], rooms = [], isAdmin,
           marginBottom: '1rem',
           padding: '0.625rem 1rem',
           borderRadius: '8px',
-          background: 'rgba(234, 179, 8, 0.12)',
+          background: 'rgba(234, 179, 8, 0.15)',
           border: '1px solid rgba(234, 179, 8, 0.3)',
-          color: '#a16207',
+          color: 'var(--status-pending-text)',
           fontSize: '0.8125rem',
+          fontWeight: 600,
           display: 'flex',
           alignItems: 'center',
-          gap: '0.5rem',
-          fontWeight: 600
+          gap: '0.5rem'
         }}>
-          <Info size={16} />
-          {nonAdminNotice}
+          ⚠️ {nonAdminNotice}
         </div>
       )}
 
-      {/* Grid Utama Kalender */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '6px', position: 'relative' }}>
-        
-        {/* Header Nama Hari */}
-        {dayNames.map((d, idx) => (
-          <div
-            key={d}
-            style={{
-              textAlign: 'center',
-              fontWeight: 700,
-              fontSize: '0.75rem',
-              color: idx >= 5 ? 'var(--primary-red)' : 'var(--text-muted)',
-              padding: '0.5rem 0',
-              textTransform: 'uppercase',
-              letterSpacing: '0.05em'
-            }}
-          >
-            {d}
-          </div>
-        ))}
-
-        {/* Sel Tanggal */}
-        {calendarDays.map((item, index) => {
-          const isToday = item.dateStr === todayStr;
-          const isSelected = item.dateStr === selectedDateStr;
-          const isPastDate = item.dateStr < todayStr;
-          
-          // Bookings pada tanggal ini
-          const dayBookings = filteredBookings.filter(b => b.tanggal_pelaksanaan === item.dateStr);
-          const hasBookings = dayBookings.length > 0;
-
-          // Distinct status untuk dots indikator
-          const statusTypes = Array.from(new Set(dayBookings.map(b => getNormalizedStatus(b.status))));
-
-          return (
+      {/* Grid Kalender Responsif dengan Scroll Box */}
+      <div className="calendar-scroll-wrapper">
+        <div className="calendar-grid-box">
+          {/* Header Hari */}
+          {dayNames.map((d, i) => (
             <div
-              key={index}
-              onClick={() => handleLeftClickDate(item.dateStr)}
-              onContextMenu={(e) => handleContextMenuDate(e, item.dateStr)}
-              title={isPastDate ? "Tanggal sudah lewat (Klik kiri untuk melihat riwayat)" : isAdmin ? "Klik kiri: Pop-up info | Klik kanan: Form peminjaman" : "Klik kiri untuk pop-up info ketersediaan jam"}
-              style={{
-                minHeight: '84px',
-                padding: '0.375rem 0.5rem',
-                borderRadius: '10px',
-                border: isSelected 
-                  ? '2px solid var(--primary-red)' 
-                  : isToday 
-                    ? '2px dashed var(--primary-red)' 
-                    : '1px solid var(--card-border)',
-                background: isSelected
-                  ? 'rgba(224, 0, 0, 0.18)'
-                  : isPastDate
-                    ? 'var(--input-bg)'
-                    : hasBookings
-                      ? 'rgba(224, 0, 0, 0.08)'
-                      : item.isCurrentMonth
-                        ? 'var(--card-bg)'
-                        : 'rgba(0, 0, 0, 0.03)',
-                opacity: item.isCurrentMonth ? (isPastDate ? 0.75 : 1) : 0.45,
-                cursor: 'pointer',
-                transition: 'all 0.15s ease',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                position: 'relative'
-              }}
+              key={i}
+              className={`calendar-weekday-header ${i === 0 || i === 6 ? 'weekend' : ''}`}
             >
-              {/* Top Row: Tanggal & Badge Today */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <span
-                  style={{
-                    fontSize: '0.875rem',
-                    fontWeight: isToday || isSelected ? 800 : 600,
-                    color: isSelected 
-                      ? 'var(--primary-red)' 
-                      : isToday 
-                        ? 'var(--primary-red)' 
-                        : isPastDate
-                          ? 'var(--text-muted)'
-                          : 'var(--text-title)',
-                    width: '24px',
-                    height: '24px',
-                    borderRadius: '50%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    background: isToday ? 'rgba(224, 0, 0, 0.15)' : 'transparent'
-                  }}
-                >
-                  {item.date.getDate()}
-                </span>
-
-                {isToday && (
-                  <span style={{ fontSize: '0.625rem', fontWeight: 700, color: 'var(--primary-red)', background: 'rgba(224, 0, 0, 0.1)', padding: '0.1rem 0.35rem', borderRadius: '4px' }}>
-                    Hari ini
-                  </span>
-                )}
-              </div>
-
-              {/* Middle / Bottom Content: Indikator Keterisian & Riwayat */}
-              <div style={{ marginTop: '0.25rem' }}>
-                {hasBookings ? (
-                  <div>
-                    <div style={{ 
-                      fontSize: '0.6875rem', 
-                      fontWeight: 700, 
-                      color: isPastDate ? 'var(--text-muted)' : 'var(--primary-red)', 
-                      background: isPastDate ? 'rgba(148, 163, 184, 0.15)' : 'rgba(224, 0, 0, 0.1)', 
-                      padding: '0.15rem 0.4rem', 
-                      borderRadius: '4px',
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      marginBottom: '0.2rem'
-                    }}>
-                      {dayBookings.length} Terpakai
-                    </div>
-                    {/* Status Dots */}
-                    <div style={{ display: 'flex', gap: '3px', alignItems: 'center' }}>
-                      {statusTypes.map((st, i) => {
-                        let dotColor = '#ca8a04'; // yellow
-                        if (st === 'Disetujui' || st === 'Selesai') dotColor = '#16a34a'; // green
-                        if (st === 'Unggah Nota Dinas' || st === 'Jadwal Ulang') dotColor = '#0284c7'; // blue
-                        return (
-                          <span
-                            key={i}
-                            style={{
-                              width: '6px',
-                              height: '6px',
-                              borderRadius: '50%',
-                              backgroundColor: isPastDate ? '#94a3b8' : dotColor,
-                              display: 'inline-block'
-                            }}
-                          />
-                        );
-                      })}
-                    </div>
-                  </div>
-                ) : (
-                  <div style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>
-                    Kosong
-                  </div>
-                )}
-              </div>
-
+              {d}
             </div>
-          );
-        })}
+          ))}
 
+          {/* Sel Tanggal */}
+          {calendarDays.map((item, index) => {
+            const isToday = item.dateStr === todayStr;
+            const isSelected = item.dateStr === selectedDateStr;
+            const isPastDate = item.dateStr < todayStr;
+            
+            // Bookings pada tanggal ini
+            const dayBookings = filteredBookings.filter(b => b.tanggal_pelaksanaan === item.dateStr);
+            const hasBookings = dayBookings.length > 0;
+
+            // Distinct status untuk dots indikator
+            const statusTypes = Array.from(new Set(dayBookings.map(b => getNormalizedStatus(b.status))));
+
+            return (
+              <div
+                key={index}
+                className="calendar-day-cell"
+                onClick={() => handleLeftClickDate(item.dateStr)}
+                onContextMenu={(e) => handleContextMenuDate(e, item.dateStr)}
+                title={isPastDate ? "Tanggal sudah lewat (Klik kiri untuk melihat riwayat)" : isAdmin ? "Klik kiri: Pop-up info | Klik kanan: Form peminjaman" : "Klik kiri untuk pop-up info ketersediaan jam"}
+                style={{
+                  border: isSelected 
+                    ? '2px solid var(--primary-red)' 
+                    : isToday 
+                      ? '2px dashed var(--primary-red)' 
+                      : '1px solid var(--card-border)',
+                  background: isSelected
+                    ? 'rgba(224, 0, 0, 0.18)'
+                    : isPastDate
+                      ? 'var(--input-bg)'
+                      : hasBookings
+                        ? 'rgba(224, 0, 0, 0.08)'
+                        : item.isCurrentMonth
+                          ? 'var(--card-bg)'
+                          : 'rgba(0, 0, 0, 0.03)',
+                  opacity: item.isCurrentMonth ? (isPastDate ? 0.75 : 1) : 0.45,
+                }}
+              >
+                {/* Top Row: Tanggal & Badge Today */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span
+                    className="calendar-day-number"
+                    style={{
+                      fontSize: '0.875rem',
+                      fontWeight: isToday || isSelected ? 800 : 600,
+                      color: isSelected 
+                        ? 'var(--primary-red)' 
+                        : isToday 
+                          ? 'var(--primary-red)' 
+                          : isPastDate
+                            ? 'var(--text-muted)'
+                            : 'var(--text-title)',
+                      width: '24px',
+                      height: '24px',
+                      borderRadius: '50%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      background: isToday ? 'rgba(224, 0, 0, 0.15)' : 'transparent'
+                    }}
+                  >
+                    {item.date.getDate()}
+                  </span>
+
+                  {isToday && (
+                    <span style={{ fontSize: '0.625rem', fontWeight: 700, color: 'var(--primary-red)', background: 'rgba(224, 0, 0, 0.1)', padding: '0.1rem 0.35rem', borderRadius: '4px' }}>
+                      Hari ini
+                    </span>
+                  )}
+                </div>
+
+                {/* Middle / Bottom Content: Indikator Keterisian & Riwayat */}
+                <div style={{ marginTop: '0.25rem' }}>
+                  {hasBookings ? (
+                    <div>
+                      <div style={{ 
+                        fontSize: '0.6875rem', 
+                        fontWeight: 700, 
+                        color: isPastDate ? 'var(--text-muted)' : 'var(--primary-red)', 
+                        background: isPastDate ? 'rgba(148, 163, 184, 0.15)' : 'rgba(224, 0, 0, 0.1)', 
+                        padding: '0.15rem 0.4rem', 
+                        borderRadius: '4px',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        marginBottom: '0.2rem'
+                      }}>
+                        {dayBookings.length} Terpakai
+                      </div>
+                      {/* Status Dots */}
+                      <div style={{ display: 'flex', gap: '3px', alignItems: 'center' }}>
+                        {statusTypes.map((st, i) => {
+                          let dotColor = '#ca8a04'; // yellow
+                          if (st === 'Disetujui' || st === 'Selesai') dotColor = '#16a34a'; // green
+                          if (st === 'Unggah Nota Dinas' || st === 'Jadwal Ulang') dotColor = '#0284c7'; // blue
+                          return (
+                            <span
+                              key={i}
+                              style={{
+                                width: '6px',
+                                height: '6px',
+                                borderRadius: '50%',
+                                backgroundColor: isPastDate ? '#94a3b8' : dotColor,
+                                display: 'inline-block'
+                              }}
+                            />
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ) : (
+                    <div style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>
+                      Kosong
+                    </div>
+                  )}
+                </div>
+
+              </div>
+            );
+          })}
+
+        </div>
       </div>
 
       {/* MINI POP-UP MODAL INFORMASI / RIWAYAT KETERSEDIAAN RUANGAN */}

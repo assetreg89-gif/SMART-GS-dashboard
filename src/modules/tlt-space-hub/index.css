@@ -3,83 +3,83 @@
   --primary-red: #e00000;
   --primary-red-hover: #c00000;
   --bg-color: #f8fafc;
-  --bg-image: radial-gradient(at 0% 0%, rgba(224, 0, 0, 0.06) 0px, transparent 50%),
-    radial-gradient(at 100% 100%, rgba(37, 99, 235, 0.04) 0px, transparent 50%);
+  --bg-image: radial-gradient(at 0% 0%, rgba(224, 0, 0, 0.07) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(37, 99, 235, 0.05) 0px, transparent 50%);
   --card-bg: #ffffff;
-  --card-border: #e2e8f0;
-  --card-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.06);
-  --text-title: #0f172a;
-  --text-main: #1e293b;
-  --text-muted: #64748b;
-  --nav-bg: rgba(255, 255, 255, 0.92);
+  --card-border: #cbd5e1;
+  --card-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.07);
+  --text-title: #050811;
+  --text-main: #0f172a;
+  --text-muted: #334155;
+  --nav-bg: rgba(255, 255, 255, 0.95);
   --input-bg: #f1f5f9;
-  --input-border: #cbd5e1;
-  --input-text: #0f172a;
-  --table-head-bg: #f8fafc;
-  --table-hover: #f1f5f9;
+  --input-border: #94a3b8;
+  --input-text: #050811;
+  --table-head-bg: #f1f5f9;
+  --table-hover: #e2e8f0;
 
-  --status-pending-bg: #fef9c3;
-  --status-pending-text: #854d0e;
-  --status-nota-bg: #e0f2fe;
+  --status-pending-bg: #fef08a;
+  --status-pending-text: #713f12;
+  --status-nota-bg: #bae6fd;
   --status-nota-text: #0369a1;
-  --status-approved-bg: #dcfce7;
-  --status-approved-text: #15803d;
-  --status-done-bg: #f0fdf4;
-  --status-done-text: #166534;
-  --status-reschedule-bg: #dbeafe;
+  --status-approved-bg: #bbf7d0;
+  --status-approved-text: #14532d;
+  --status-done-bg: #dcfce7;
+  --status-done-text: #15803d;
+  --status-reschedule-bg: #bfdbfe;
   --status-reschedule-text: #1e40af;
-  --status-cancel-bg: #fee2e2;
+  --status-cancel-bg: #fecaca;
   --status-cancel-text: #991b1b;
 
   --btn-secondary-bg: #f1f5f9;
-  --btn-secondary-text: #334155;
-  --btn-secondary-border: #cbd5e1;
+  --btn-secondary-text: #0f172a;
+  --btn-secondary-border: #94a3b8;
   --btn-secondary-hover: #e2e8f0;
 
-  --modal-overlay-bg: rgba(15, 23, 42, 0.4);
+  --modal-overlay-bg: rgba(15, 23, 42, 0.55);
   --footer-bg: #ffffff;
   --font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
 }
 
 [data-theme="dark"] {
   --primary-red: #e00000;
-  --primary-red-hover: #c00000;
-  --bg-color: #0b0f19;
-  --bg-image: radial-gradient(at 0% 0%, rgba(224, 0, 0, 0.12) 0px, transparent 50%),
-    radial-gradient(at 100% 100%, rgba(37, 99, 235, 0.08) 0px, transparent 50%);
-  --card-bg: rgba(18, 24, 38, 0.85);
-  --card-border: rgba(255, 255, 255, 0.08);
-  --card-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  --primary-red-hover: #ff1a1a;
+  --bg-color: #080c15;
+  --bg-image: radial-gradient(at 0% 0%, rgba(224, 0, 0, 0.15) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(37, 99, 235, 0.1) 0px, transparent 50%);
+  --card-bg: rgba(15, 22, 36, 0.92);
+  --card-border: rgba(255, 255, 255, 0.13);
+  --card-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.45);
   --text-title: #ffffff;
-  --text-main: #f1f5f9;
-  --text-muted: #94a3b8;
-  --nav-bg: rgba(18, 24, 38, 0.85);
-  --input-bg: rgba(15, 23, 42, 0.6);
-  --input-border: rgba(255, 255, 255, 0.08);
+  --text-main: #f8fafc;
+  --text-muted: #cbd5e1;
+  --nav-bg: rgba(15, 22, 36, 0.92);
+  --input-bg: rgba(8, 12, 21, 0.75);
+  --input-border: rgba(255, 255, 255, 0.16);
   --input-text: #ffffff;
-  --table-head-bg: rgba(15, 23, 42, 0.6);
-  --table-hover: rgba(255, 255, 255, 0.02);
+  --table-head-bg: rgba(8, 12, 21, 0.85);
+  --table-hover: rgba(255, 255, 255, 0.05);
 
-  --status-pending-bg: rgba(234, 179, 8, 0.15);
-  --status-pending-text: #facc15;
-  --status-nota-bg: rgba(14, 165, 233, 0.2);
-  --status-nota-text: #38bdf8;
-  --status-approved-bg: rgba(34, 197, 94, 0.2);
-  --status-approved-text: #4ade80;
-  --status-done-bg: rgba(22, 163, 74, 0.15);
-  --status-done-text: #4ade80;
-  --status-reschedule-bg: rgba(59, 130, 246, 0.15);
-  --status-reschedule-text: #60a5fa;
-  --status-cancel-bg: rgba(239, 68, 68, 0.15);
-  --status-cancel-text: #f87171;
+  --status-pending-bg: rgba(234, 179, 8, 0.22);
+  --status-pending-text: #fde047;
+  --status-nota-bg: rgba(14, 165, 233, 0.25);
+  --status-nota-text: #7dd3fc;
+  --status-approved-bg: rgba(34, 197, 94, 0.25);
+  --status-approved-text: #86efac;
+  --status-done-bg: rgba(22, 163, 74, 0.22);
+  --status-done-text: #86efac;
+  --status-reschedule-bg: rgba(59, 130, 246, 0.22);
+  --status-reschedule-text: #93c5fd;
+  --status-cancel-bg: rgba(239, 68, 68, 0.22);
+  --status-cancel-text: #fca5a5;
 
-  --btn-secondary-bg: rgba(255, 255, 255, 0.08);
-  --btn-secondary-text: #f1f5f9;
-  --btn-secondary-border: rgba(255, 255, 255, 0.08);
-  --btn-secondary-hover: rgba(255, 255, 255, 0.15);
+  --btn-secondary-bg: rgba(255, 255, 255, 0.1);
+  --btn-secondary-text: #ffffff;
+  --btn-secondary-border: rgba(255, 255, 255, 0.18);
+  --btn-secondary-hover: rgba(255, 255, 255, 0.18);
 
-  --modal-overlay-bg: rgba(0, 0, 0, 0.75);
-  --footer-bg: rgba(11, 15, 25, 0.9);
+  --modal-overlay-bg: rgba(0, 0, 0, 0.82);
+  --footer-bg: rgba(8, 12, 21, 0.95);
 }
 
 * {
@@ -94,11 +94,28 @@ body {
   background-image: var(--bg-image);
   background-attachment: fixed;
   color: var(--text-main);
+  font-size: 15px;
+  font-weight: 500;
   min-height: 100vh;
-  line-height: 1.5;
+  line-height: 1.55;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
   transition: background-color 0.3s ease, color 0.3s ease;
   position: relative;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-title);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+
+p {
+  color: var(--text-muted);
+  font-weight: 500;
+  line-height: 1.6;
 }
 
 /* Background Watermark Logo Telkom Indonesia */
@@ -177,10 +194,11 @@ body::before {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.625rem 1.25rem;
+  padding: 0.65rem 1.25rem;
   border-radius: 10px;
-  font-weight: 600;
-  font-size: 0.875rem;
+  font-weight: 700;
+  font-size: 0.9375rem;
+  letter-spacing: 0.01em;
   cursor: pointer;
   transition: all 0.2s ease;
   border: none;
@@ -191,7 +209,8 @@ body::before {
 .btn-primary {
   background: linear-gradient(135deg, var(--primary-red) 0%, #b30000 100%);
   color: #ffffff;
-  box-shadow: 0 4px 14px 0 rgba(224, 0, 0, 0.3);
+  box-shadow: 0 4px 14px 0 rgba(224, 0, 0, 0.35);
+  font-weight: 700;
 }
 
 .btn-primary:hover {
@@ -204,6 +223,7 @@ body::before {
   background: var(--btn-secondary-bg);
   color: var(--btn-secondary-text);
   border: 1px solid var(--btn-secondary-border);
+  font-weight: 700;
 }
 
 .btn-secondary:hover {
@@ -213,13 +233,14 @@ body::before {
 
 .btn-danger {
   background: rgba(239, 68, 68, 0.15);
-  color: #ef4444;
-  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #dc2626;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  font-weight: 700;
 }
 
 .btn-danger:hover {
   background: rgba(239, 68, 68, 0.25);
-  color: #dc2626;
+  color: #b91c1c;
   transform: translateY(-1px);
 }
 
@@ -276,10 +297,11 @@ body::before {
   display: inline-flex;
   align-items: center;
   gap: 0.375rem;
-  padding: 0.3rem 0.75rem;
+  padding: 0.35rem 0.85rem;
   border-radius: 9999px;
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   font-weight: 700;
+  letter-spacing: 0.01em;
   white-space: nowrap;
 }
 
@@ -287,42 +309,42 @@ body::before {
 .badge-status.booking-tu {
   background: var(--status-pending-bg);
   color: var(--status-pending-text);
-  border: 1px solid rgba(234, 179, 8, 0.3);
+  border: 1px solid rgba(234, 179, 8, 0.4);
 }
 
 .badge-status.unggah-nota,
 .badge-status.menunggu-nota {
   background: var(--status-nota-bg);
   color: var(--status-nota-text);
-  border: 1px solid rgba(14, 165, 233, 0.4);
+  border: 1px solid rgba(14, 165, 233, 0.45);
 }
 
 .badge-status.disetujui,
 .badge-status.approved {
   background: var(--status-approved-bg);
   color: var(--status-approved-text);
-  border: 1px solid rgba(34, 197, 94, 0.35);
+  border: 1px solid rgba(34, 197, 94, 0.45);
 }
 
 .badge-status.selesai,
 .badge-status.done {
   background: var(--status-done-bg);
   color: var(--status-done-text);
-  border: 1px solid rgba(22, 163, 74, 0.3);
+  border: 1px solid rgba(22, 163, 74, 0.4);
 }
 
 .badge-status.jadwal-ulang,
 .badge-status.reschedule {
   background: var(--status-reschedule-bg);
   color: var(--status-reschedule-text);
-  border: 1px solid rgba(59, 130, 246, 0.3);
+  border: 1px solid rgba(59, 130, 246, 0.4);
 }
 
 .badge-status.dibatalkan,
 .badge-status.tidak-jadi {
   background: var(--status-cancel-bg);
   color: var(--status-cancel-text);
-  border: 1px solid rgba(239, 68, 68, 0.3);
+  border: 1px solid rgba(239, 68, 68, 0.4);
 }
 
 /* Tabel Responsif HP */
@@ -332,31 +354,384 @@ body::before {
   -webkit-overflow-scrolling: touch;
 }
 
-/* Penyesuaian Media Queries untuk Tampilan HP & Tablet */
-@media (max-width: 768px) {
+/* ============================================================
+   RESPONSIVE DESIGN SYSTEM (PC, LAPTOP, TABLET, MOBILE)
+   ============================================================ */
+
+/* Laptops & Desktops (max-width: 1200px) */
+@media (max-width: 1200px) {
   .main-content {
-    padding: 1rem 0.75rem;
+    padding: 1.25rem 1rem;
   }
+}
 
-  .modal-overlay {
-    padding: 0.5rem;
+/* ============================================================
+   RESPONSIVE CALENDAR STYLES
+   ============================================================ */
+.calendar-card {
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+}
+
+.calendar-header-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.calendar-header-title-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.calendar-title-text {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text-title);
+  margin: 0;
+}
+
+.calendar-subtitle-text {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.calendar-controls-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.calendar-floor-filters {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: var(--input-bg);
+  padding: 0.25rem;
+  border-radius: 10px;
+  border: 1px solid var(--card-border);
+}
+
+.calendar-floor-btn {
+  padding: 0.35rem 0.65rem !important;
+  font-size: 0.75rem !important;
+  border-radius: 7px !important;
+  font-weight: 700 !important;
+  min-height: auto !important;
+}
+
+.calendar-month-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.calendar-today-btn {
+  padding: 0.35rem 0.75rem !important;
+  font-size: 0.75rem !important;
+  border-radius: 8px !important;
+  font-weight: 700 !important;
+}
+
+.calendar-month-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: var(--input-bg);
+  padding: 0.2rem 0.4rem;
+  border-radius: 10px;
+  border: 1px solid var(--card-border);
+}
+
+.calendar-nav-arrow {
+  background: transparent;
+  border: none;
+  color: var(--text-main);
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease;
+}
+
+.calendar-nav-arrow:hover {
+  background: var(--table-hover);
+  color: var(--primary-red);
+}
+
+.calendar-month-label {
+  font-size: 0.8125rem;
+  font-weight: 800;
+  color: var(--text-title);
+  min-width: 120px;
+  text-align: center;
+  user-select: none;
+}
+
+.calendar-scroll-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 0.35rem;
+}
+
+.calendar-grid-box {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.5rem;
+  min-width: 520px;
+}
+
+.calendar-weekday-header {
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 0.5rem 0.25rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  user-select: none;
+}
+
+.calendar-weekday-header.weekend {
+  color: var(--primary-red);
+}
+
+.calendar-day-cell {
+  min-height: 85px;
+  padding: 0.5rem;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+}
+
+.calendar-day-cell:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Tablet & iPad (max-width: 992px) */
+@media (max-width: 992px) {
+  .main-content {
+    padding: 1rem 0.85rem;
   }
-
+  .navbar-container {
+    padding: 0.85rem 1.5rem !important;
+  }
   .modal-container {
-    padding: 1.25rem;
-    max-height: 92vh;
-    border-radius: 12px;
+    max-width: 92vw;
+    padding: 1.5rem 1.25rem;
+  }
+}
+
+/* Mobile & HP (max-width: 768px) */
+@media (max-width: 768px) {
+  body {
+    font-size: 14px;
+  }
+
+  .main-content {
+    padding: 0.85rem 0.65rem;
+  }
+
+  .navbar-container {
+    padding: 0.65rem 0.85rem !important;
+    gap: 0.5rem !important;
+    flex-wrap: nowrap !important;
+  }
+
+  .navbar-brand-title {
+    font-size: 1.05rem !important;
+  }
+
+  .navbar-tag-badge {
+    display: none !important;
+  }
+
+  .navbar-brand-subtitle {
+    display: none !important;
+  }
+
+  .navbar-logo-box {
+    width: 36px !important;
+    height: 36px !important;
+  }
+
+  .glass-card {
+    padding: 1.15rem 0.9rem !important;
+    border-radius: 14px !important;
+  }
+
+  .tab-nav-container {
+    width: 100% !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap !important;
+    padding: 0.35rem !important;
+  }
+
+  .tab-nav-btn {
+    flex-shrink: 0 !important;
+    padding: 0.45rem 0.85rem !important;
+    font-size: 0.8125rem !important;
+  }
+
+  .stat-grid-bar {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.6rem !important;
+    width: 100% !important;
+  }
+
+  .stat-card-box {
+    min-width: 0 !important;
+    padding: 0.65rem 0.75rem !important;
+  }
+
+  .stat-card-number {
+    font-size: 1.25rem !important;
   }
 
   .btn {
-    padding: 0.5rem 0.875rem;
+    padding: 0.55rem 0.95rem;
+    font-size: 0.875rem;
+  }
+
+  .btn-responsive-block {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  .calendar-header-wrapper {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.75rem !important;
+  }
+
+  .calendar-controls-bar {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.6rem !important;
+    width: 100% !important;
+  }
+
+  .calendar-floor-filters {
+    width: 100% !important;
+    justify-content: space-between !important;
+  }
+
+  .calendar-floor-btn {
+    flex: 1 !important;
+    text-align: center !important;
+  }
+
+  .calendar-month-nav {
+    width: 100% !important;
+    justify-content: space-between !important;
+  }
+
+  .calendar-month-selector {
+    flex: 1 !important;
+    justify-content: space-between !important;
+  }
+
+  .calendar-grid-box {
+    min-width: 480px !important;
+    gap: 0.35rem !important;
+  }
+
+  .calendar-day-cell {
+    min-height: 64px !important;
+    padding: 0.35rem 0.25rem !important;
+  }
+
+  .calendar-day-number {
+    font-size: 0.75rem !important;
+  }
+
+  .form-grid-2 {
+    grid-template-columns: 1fr !important;
+  }
+
+  .modal-container {
+    padding: 1.15rem 0.85rem !important;
+    max-height: 94vh !important;
+    margin: 0.5rem;
+  }
+
+  .custom-table th, 
+  .custom-table td {
+    padding: 0.65rem 0.75rem;
     font-size: 0.8125rem;
   }
 }
 
+/* Small Mobile Screens (max-width: 480px) */
 @media (max-width: 480px) {
-  .modal-container {
-    padding: 1rem;
+  .navbar-container {
+    padding: 0.5rem 0.65rem !important;
+    gap: 0.4rem !important;
+  }
+
+  .nav-home-btn .nav-btn-text {
+    display: none !important;
+  }
+
+  .nav-home-btn {
+    padding: 0.35rem 0.45rem !important;
+    min-width: 32px !important;
+    height: 32px !important;
+    border-radius: 8px !important;
+  }
+
+  .navbar-brand-title {
+    font-size: 0.9375rem !important;
+  }
+
+  .navbar-logo-box {
+    width: 30px !important;
+    height: 30px !important;
+    border-radius: 8px !important;
+  }
+
+  .nav-admin-btn {
+    padding: 0.35rem 0.55rem !important;
+    font-size: 0.725rem !important;
+    border-radius: 8px !important;
+  }
+
+  .nav-theme-btn {
+    width: 32px !important;
+    height: 32px !important;
+  }
+
+  .admin-badge-box {
+    padding: 0.3rem 0.55rem !important;
+    font-size: 0.725rem !important;
+    border-radius: 8px !important;
+  }
+
+  .stat-grid-bar {
+    grid-template-columns: 1fr !important;
+  }
+
+  .calendar-day-cell {
+    min-height: 58px !important;
   }
 }
 
@@ -364,7 +739,6 @@ body::before {
   from {
     opacity: 0;
   }
-
   to {
     opacity: 1;
   }
@@ -375,7 +749,6 @@ body::before {
     opacity: 0;
     transform: translateY(20px) scale(0.97);
   }
-
   to {
     opacity: 1;
     transform: translateY(0) scale(1);

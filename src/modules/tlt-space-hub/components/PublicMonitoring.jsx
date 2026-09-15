@@ -1,9 +1,20 @@
 import React, { useState } from 'react';
-import { Search, Calendar, Clock, CheckCircle2, Clock3, RotateCcw, XCircle, UserCheck, Edit3, Trash2, CheckSquare, FileText, Eye, UploadCloud, Loader2, X, Copy, Check, ClipboardList } from 'lucide-react';
+import { Search, Calendar, Clock, CheckCircle2, Clock3, RotateCcw, XCircle, UserCheck, Edit3, Trash2, CheckSquare, FileText, Eye, UploadCloud, Loader2, X, Copy, Check, ClipboardList, Building2, BarChart2 } from 'lucide-react';
 import { uploadNotaDinasToSupabase } from '../lib/supabase';
 import MonitoringCalendar from './MonitoringCalendar';
 
-export default function PublicMonitoring({ bookings, rooms = [], isAdmin, onOpenBookingModal, onOpenBookingModalWithDate, onUpdateBookingStatus, onSaveApproval, onRequestDeleteBooking }) {
+export default function PublicMonitoring({ 
+  bookings, 
+  rooms = [], 
+  isAdmin, 
+  activeTab = 'monitoring',
+  setActiveTab,
+  onOpenBookingModal, 
+  onOpenBookingModalWithDate, 
+  onUpdateBookingStatus, 
+  onSaveApproval, 
+  onRequestDeleteBooking 
+}) {
   const [selectedFloor, setSelectedFloor] = useState('ALL');
   const [selectedStatus, setSelectedStatus] = useState('ALL');
   const [searchTerm, setSearchTerm] = useState('');
@@ -305,46 +316,153 @@ export default function PublicMonitoring({ bookings, rooms = [], isAdmin, onOpen
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      <div className="glass-card" style={{ padding: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-        <div>
-          <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-title)', marginBottom: '0.25rem' }}>
-            Monitoring Ketersediaan Ruang Rapat
-          </h2>
-          <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>
-            Pantau status ketersediaan dan pengajuan peminjaman ruangan Telkom Landmark Tower secara real-time.
-          </p>
-        </div>
-
-        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-          <div style={{ background: 'var(--input-bg)', border: '1px solid var(--card-border)', padding: '0.65rem 1rem', borderRadius: '12px', textAlign: 'center' }}>
-            <span style={{ fontSize: '0.725rem', color: 'var(--text-muted)', display: 'block' }}>Total Peminjaman</span>
-            <span style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text-title)' }}>{bookings.length}</span>
+      <div className="glass-card" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+          <div>
+            <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text-title)', marginBottom: '0.35rem', letterSpacing: '-0.02em' }}>
+              Monitoring Ketersediaan Ruang Rapat
+            </h2>
+            <p style={{ fontSize: '0.9375rem', color: 'var(--text-muted)', margin: 0, fontWeight: 500 }}>
+              Pantau status ketersediaan dan pengajuan peminjaman ruangan Telkom Landmark Tower secara real-time.
+            </p>
           </div>
 
-          <div style={{ background: 'var(--status-pending-bg)', border: '1px solid rgba(234, 179, 8, 0.3)', padding: '0.65rem 1rem', borderRadius: '12px', textAlign: 'center' }}>
-            <span style={{ fontSize: '0.725rem', color: 'var(--status-pending-text)', display: 'block' }}>Menunggu Persetujuan</span>
-            <span style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--status-pending-text)' }}>
+          {onOpenBookingModal && (
+            <button 
+              onClick={onOpenBookingModal}
+              className="btn btn-primary"
+              style={{ 
+                fontSize: '0.9375rem', 
+                padding: '0.65rem 1.35rem',
+                fontWeight: 800,
+                borderRadius: '12px',
+                background: 'var(--primary-red)',
+                boxShadow: '0 4px 14px rgba(224, 0, 0, 0.35)',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                cursor: 'pointer'
+              }}
+            >
+              + Input Pengajuan Ruangan
+            </button>
+          )}
+        </div>
+
+        {/* Tab Navigation Controls */}
+        {setActiveTab && (
+          <div className="tab-nav-container" style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            background: 'var(--input-bg)',
+            padding: '0.4rem',
+            borderRadius: '14px',
+            border: '1.5px solid var(--card-border)',
+            gap: '0.4rem',
+            width: 'fit-content',
+            flexWrap: 'wrap'
+          }}>
+            <button
+              onClick={() => setActiveTab('monitoring')}
+              className="tab-nav-btn"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                padding: '0.55rem 1.1rem',
+                borderRadius: '10px',
+                border: 'none',
+                background: activeTab === 'monitoring' ? 'var(--primary-red)' : 'transparent',
+                color: activeTab === 'monitoring' ? '#ffffff' : 'var(--text-title)',
+                fontSize: '0.875rem',
+                fontWeight: activeTab === 'monitoring' ? 800 : 700,
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                boxShadow: activeTab === 'monitoring' ? '0 2px 10px rgba(224, 0, 0, 0.35)' : 'none'
+              }}
+            >
+              <Calendar size={16} />
+              <span>Monitoring Ruangan</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('catalog')}
+              className="tab-nav-btn"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                padding: '0.55rem 1.1rem',
+                borderRadius: '10px',
+                border: 'none',
+                background: activeTab === 'catalog' ? 'var(--primary-red)' : 'transparent',
+                color: activeTab === 'catalog' ? '#ffffff' : 'var(--text-title)',
+                fontSize: '0.875rem',
+                fontWeight: activeTab === 'catalog' ? 800 : 700,
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                boxShadow: activeTab === 'catalog' ? '0 2px 10px rgba(224, 0, 0, 0.35)' : 'none'
+              }}
+            >
+              <Building2 size={16} />
+              <span>Katalog Ruang Lt. 9, 11, 12</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('analytics')}
+              className="tab-nav-btn"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                padding: '0.55rem 1.1rem',
+                borderRadius: '10px',
+                border: 'none',
+                background: activeTab === 'analytics' ? 'var(--primary-red)' : 'transparent',
+                color: activeTab === 'analytics' ? '#ffffff' : 'var(--text-title)',
+                fontSize: '0.875rem',
+                fontWeight: activeTab === 'analytics' ? 800 : 700,
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                boxShadow: activeTab === 'analytics' ? '0 2px 10px rgba(224, 0, 0, 0.35)' : 'none'
+              }}
+            >
+              <BarChart2 size={16} />
+              <span>Statistik & Analitik</span>
+            </button>
+          </div>
+        )}
+
+        <div className="stat-grid-bar" style={{ display: 'flex', gap: '0.875rem', flexWrap: 'wrap' }}>
+          <div className="stat-card-box" style={{ background: 'var(--input-bg)', border: '1px solid var(--card-border)', padding: '0.75rem 1.25rem', borderRadius: '12px', textAlign: 'center', minWidth: '120px' }}>
+            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Total Peminjaman</span>
+            <span className="stat-card-number" style={{ fontSize: '1.45rem', fontWeight: 800, color: 'var(--text-title)' }}>{bookings.length}</span>
+          </div>
+
+          <div className="stat-card-box" style={{ background: 'var(--status-pending-bg)', border: '1px solid rgba(234, 179, 8, 0.4)', padding: '0.75rem 1.25rem', borderRadius: '12px', textAlign: 'center', minWidth: '140px' }}>
+            <span style={{ fontSize: '0.75rem', color: 'var(--status-pending-text)', display: 'block', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Menunggu Persetujuan</span>
+            <span className="stat-card-number" style={{ fontSize: '1.45rem', fontWeight: 800, color: 'var(--status-pending-text)' }}>
               {bookings.filter(b => getNormalizedStatus(b.status) === 'Menunggu Persetujuan').length}
             </span>
           </div>
 
-          <div style={{ background: 'var(--status-nota-bg)', border: '1px solid rgba(14, 165, 233, 0.4)', padding: '0.65rem 1rem', borderRadius: '12px', textAlign: 'center' }}>
-            <span style={{ fontSize: '0.725rem', color: 'var(--status-nota-text)', display: 'block' }}>Unggah Nota Dinas</span>
-            <span style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--status-nota-text)' }}>
+          <div className="stat-card-box" style={{ background: 'var(--status-nota-bg)', border: '1px solid rgba(14, 165, 233, 0.45)', padding: '0.75rem 1.25rem', borderRadius: '12px', textAlign: 'center', minWidth: '130px' }}>
+            <span style={{ fontSize: '0.75rem', color: 'var(--status-nota-text)', display: 'block', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Unggah Nota Dinas</span>
+            <span className="stat-card-number" style={{ fontSize: '1.45rem', fontWeight: 800, color: 'var(--status-nota-text)' }}>
               {bookings.filter(b => getNormalizedStatus(b.status) === 'Unggah Nota Dinas').length}
             </span>
           </div>
 
-          <div style={{ background: 'var(--status-approved-bg)', border: '1px solid rgba(34, 197, 94, 0.35)', padding: '0.65rem 1rem', borderRadius: '12px', textAlign: 'center' }}>
-            <span style={{ fontSize: '0.725rem', color: 'var(--status-approved-text)', display: 'block' }}>Disetujui (Resmi)</span>
-            <span style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--status-approved-text)' }}>
+          <div className="stat-card-box" style={{ background: 'var(--status-approved-bg)', border: '1px solid rgba(34, 197, 94, 0.45)', padding: '0.75rem 1.25rem', borderRadius: '12px', textAlign: 'center', minWidth: '130px' }}>
+            <span style={{ fontSize: '0.75rem', color: 'var(--status-approved-text)', display: 'block', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Disetujui (Resmi)</span>
+            <span className="stat-card-number" style={{ fontSize: '1.45rem', fontWeight: 800, color: 'var(--status-approved-text)' }}>
               {bookings.filter(b => getNormalizedStatus(b.status) === 'Disetujui').length}
             </span>
           </div>
 
-          <div style={{ background: 'var(--status-done-bg)', border: '1px solid rgba(22, 163, 74, 0.3)', padding: '0.65rem 1rem', borderRadius: '12px', textAlign: 'center' }}>
-            <span style={{ fontSize: '0.725rem', color: 'var(--status-done-text)', display: 'block' }}>Agenda Selesai</span>
-            <span style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--status-done-text)' }}>
+          <div className="stat-card-box" style={{ background: 'var(--status-done-bg)', border: '1px solid rgba(22, 163, 74, 0.4)', padding: '0.75rem 1.25rem', borderRadius: '12px', textAlign: 'center', minWidth: '120px' }}>
+            <span style={{ fontSize: '0.75rem', color: 'var(--status-done-text)', display: 'block', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Agenda Selesai</span>
+            <span className="stat-card-number" style={{ fontSize: '1.45rem', fontWeight: 800, color: 'var(--status-done-text)' }}>
               {bookings.filter(b => getNormalizedStatus(b.status) === 'Selesai').length}
             </span>
           </div>

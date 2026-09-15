@@ -24,7 +24,7 @@ import {
   subscribeToRooms
 } from './lib/supabase';
 
-export default function App() {
+export default function App({ onBackHome }) {
   const [theme, setTheme] = useState(() => localStorage.getItem('tlt_theme') || 'light');
   const [activeTab, setActiveTab] = useState('monitoring');
   
@@ -298,6 +298,7 @@ export default function App() {
         onOpenAdminLogin={() => setIsAdminLoginOpen(true)}
         onAdminLogout={handleAdminLogout}
         onOpenBookingModal={handleOpenBookingModalDefault}
+        onBackHome={onBackHome}
       />
 
       <main className="main-content">
@@ -306,6 +307,8 @@ export default function App() {
             bookings={bookings}
             rooms={rooms}
             isAdmin={isAdmin}
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
             onOpenBookingModal={handleOpenBookingModalDefault}
             onOpenBookingModalWithDate={handleOpenBookingModalWithDate}
             onUpdateBookingStatus={(booking) => setSelectedBookingForApproval(booking)}
@@ -322,6 +325,8 @@ export default function App() {
           <RoomCatalog
             rooms={rooms}
             isAdmin={isAdmin}
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
             onOpenBookingModal={handleOpenBookingModalDefault}
             onSelectRoomForBooking={handleOpenBookingModalWithRoom}
             onOpenAddRoomModal={() => { setRoomToEdit(null); setIsAddRoomModalOpen(true); }}
@@ -335,7 +340,13 @@ export default function App() {
         )}
 
         {activeTab === 'analytics' && (
-          <AnalyticsDashboard bookings={bookings} theme={theme} />
+          <AnalyticsDashboard 
+            bookings={bookings} 
+            theme={theme}
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            onOpenBookingModal={handleOpenBookingModalDefault}
+          />
         )}
       </main>
 

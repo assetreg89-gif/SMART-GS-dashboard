@@ -49,7 +49,7 @@ export default function AdminMonitoring({ letters, onOpenApprovalModal, onEditRe
                 value={filterDate}
                 onChange={(e) => setFilterDate(e.target.value)}
                 style={{ marginLeft: '0.5rem', padding: '0.2rem 0.4rem', border: '1px solid var(--input-border)', borderRadius: '6px', background: 'var(--input-bg)', color: 'var(--input-text)' }}
-              /> 
+              />
             </div>
           </div>
         </div>
@@ -74,13 +74,13 @@ export default function AdminMonitoring({ letters, onOpenApprovalModal, onEditRe
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
-            <button 
+            <button
               onClick={onOpenRequestModal}
               className="btn btn-primary"
-              style={{ fontSize: '0.8125rem', padding: '0.55rem 1.15rem' }}
+              style={{ fontSize: '0.875rem', padding: '0.55rem 1.25rem', fontWeight: 800, display: 'inline-flex', alignItems: 'center', gap: '0.45rem' }}
             >
               <FilePlus2 size={16} />
-              Input Pengajuan Surat
+              + Input Pengajuan Surat
             </button>
 
             <button

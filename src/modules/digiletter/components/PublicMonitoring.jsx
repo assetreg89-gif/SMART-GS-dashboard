@@ -45,34 +45,34 @@ export default function PublicMonitoring({ letters, onEditRequest, onDeleteReque
       <div className="glass-card" style={{ padding: '1.5rem' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           <div>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-title)', marginBottom: '0.25rem' }}>
+            <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text-title)', marginBottom: '0.35rem', letterSpacing: '-0.02em' }}>
               Monitoring Pengajuan Nomor Surat
             </h2>
-            <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>
+            <p style={{ fontSize: '0.9375rem', color: 'var(--text-muted)', margin: 0, fontWeight: 500 }}>
               Pantau status pengajuan dan penerbitan nomor surat Sekretariat Divisi Telkom Regional 3 secara real-time.
             </p>
           </div>
 
           {/* Cards Bar */}
-          <div style={{ display: 'flex', gap: '0.875rem', flexWrap: 'wrap' }}>
-            <div style={{ background: 'var(--input-bg)', border: '1px solid var(--card-border)', padding: '0.65rem 1.25rem', borderRadius: '12px', textAlign: 'center', minWidth: '130px' }}>
-              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block', fontWeight: 600 }}>Total Pengajuan</span>
-              <span style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-title)' }}>{totalPengajuan}</span>
+          <div className="stat-grid-bar" style={{ display: 'flex', gap: '0.875rem', flexWrap: 'wrap' }}>
+            <div className="stat-card-box" style={{ background: 'var(--input-bg)', border: '1px solid var(--card-border)', padding: '0.75rem 1.25rem', borderRadius: '12px', textAlign: 'center', minWidth: '130px' }}>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Total Pengajuan</span>
+              <span className="stat-card-number" style={{ fontSize: '1.45rem', fontWeight: 800, color: 'var(--text-title)' }}>{totalPengajuan}</span>
             </div>
 
-            <div style={{ background: 'var(--status-pending-bg)', border: '1px solid rgba(234, 179, 8, 0.3)', padding: '0.65rem 1.25rem', borderRadius: '12px', textAlign: 'center', minWidth: '150px' }}>
-              <span style={{ fontSize: '0.75rem', color: 'var(--status-pending-text)', display: 'block', fontWeight: 600 }}>Menunggu Persetujuan</span>
-              <span style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--status-pending-text)' }}>{totalMenunggu}</span>
+            <div className="stat-card-box" style={{ background: 'var(--status-pending-bg)', border: '1px solid rgba(234, 179, 8, 0.4)', padding: '0.75rem 1.25rem', borderRadius: '12px', textAlign: 'center', minWidth: '150px' }}>
+              <span style={{ fontSize: '0.75rem', color: 'var(--status-pending-text)', display: 'block', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Menunggu Persetujuan</span>
+              <span className="stat-card-number" style={{ fontSize: '1.45rem', fontWeight: 800, color: 'var(--status-pending-text)' }}>{totalMenunggu}</span>
             </div>
 
-            <div style={{ background: 'var(--status-approved-bg)', border: '1px solid rgba(34, 197, 94, 0.35)', padding: '0.65rem 1.25rem', borderRadius: '12px', textAlign: 'center', minWidth: '140px' }}>
-              <span style={{ fontSize: '0.75rem', color: 'var(--status-approved-text)', display: 'block', fontWeight: 600 }}>Disetujui (Resmi)</span>
-              <span style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--status-approved-text)' }}>{totalDisetujui}</span>
+            <div className="stat-card-box" style={{ background: 'var(--status-approved-bg)', border: '1px solid rgba(34, 197, 94, 0.45)', padding: '0.75rem 1.25rem', borderRadius: '12px', textAlign: 'center', minWidth: '140px' }}>
+              <span style={{ fontSize: '0.75rem', color: 'var(--status-approved-text)', display: 'block', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Disetujui (Resmi)</span>
+              <span className="stat-card-number" style={{ fontSize: '1.45rem', fontWeight: 800, color: 'var(--status-approved-text)' }}>{totalDisetujui}</span>
             </div>
 
-            <div style={{ background: 'var(--status-cancel-bg)', border: '1px solid rgba(239, 68, 68, 0.3)', padding: '0.65rem 1.25rem', borderRadius: '12px', textAlign: 'center', minWidth: '130px' }}>
-              <span style={{ fontSize: '0.75rem', color: 'var(--status-cancel-text)', display: 'block', fontWeight: 600 }}>Dibatalkan</span>
-              <span style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--status-cancel-text)' }}>{totalDibatalkan}</span>
+            <div className="stat-card-box" style={{ background: 'var(--status-cancel-bg)', border: '1px solid rgba(239, 68, 68, 0.4)', padding: '0.75rem 1.25rem', borderRadius: '12px', textAlign: 'center', minWidth: '130px' }}>
+              <span style={{ fontSize: '0.75rem', color: 'var(--status-cancel-text)', display: 'block', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Dibatalkan</span>
+              <span className="stat-card-number" style={{ fontSize: '1.45rem', fontWeight: 800, color: 'var(--status-cancel-text)' }}>{totalDibatalkan}</span>
             </div>
           </div>
 
@@ -137,15 +137,6 @@ export default function PublicMonitoring({ letters, onEditRequest, onDeleteReque
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
-            <button 
-              onClick={onOpenRequestModal}
-              className="btn btn-primary"
-              style={{ fontSize: '0.8125rem', padding: '0.55rem 1.15rem' }}
-            >
-              <FilePlus2 size={16} />
-              + Input Pengajuan Surat
-            </button>
-
             <button
               onClick={() => exportToExcel(filteredLetters, 'DigiLetter_Reg3_Pengajuan_Surat.xlsx')}
               className="btn"
@@ -179,11 +170,9 @@ export default function PublicMonitoring({ letters, onEditRequest, onDeleteReque
                 <th>Tgl Pengajuan</th>
                 <th>Tgl TTD (EVP)</th>
                 <th style={{ width: '130px', whiteSpace: 'nowrap' }}>Jenis Surat</th>
-                <th style={{ minWidth: '280px', width: '320px' }}>Kepada</th>
                 <th style={{ minWidth: '220px' }}>Nomor Surat</th>
-                <th style={{ minWidth: '240px' }}>Perihal</th>
                 <th>Takah</th>
-                <th>PIC / Telegram</th>
+                <th>PIC</th>
                 <th>Keterangan</th>
                 <th style={{ textAlign: 'center', minWidth: '110px' }}>Aksi</th>
               </tr>
@@ -191,7 +180,7 @@ export default function PublicMonitoring({ letters, onEditRequest, onDeleteReque
             <tbody>
               {filteredLetters.length === 0 ? (
                 <tr>
-                  <td colSpan="11" style={{ textAlign: 'center', padding: '3rem 1rem', color: 'var(--text-muted)' }}>
+                  <td colSpan="9" style={{ textAlign: 'center', padding: '3rem 1rem', color: 'var(--text-muted)' }}>
                     Tidak ada data pengajuan surat yang sesuai dengan filter.
                   </td>
                 </tr>
@@ -221,11 +210,6 @@ export default function PublicMonitoring({ letters, onEditRequest, onDeleteReque
                           {item.jenis_surat}
                         </span>
                       </td>
-                      <td style={{ minWidth: '280px', maxWidth: '340px' }}>
-                        <div style={{ fontWeight: 700, color: 'var(--text-title)', wordBreak: 'break-word', textTransform: 'uppercase' }}>
-                          {item.kepada}
-                        </div>
-                      </td>
                       <td>
                         {isApproved ? (
                           <span style={{ fontFamily: 'monospace', fontWeight: 700, fontSize: '0.8125rem', color: 'var(--primary-red)', background: 'rgba(224, 0, 0, 0.08)', padding: '0.35rem 0.6rem', borderRadius: '8px', border: '1px solid rgba(224, 0, 0, 0.2)', display: 'inline-block' }}>
@@ -237,21 +221,13 @@ export default function PublicMonitoring({ letters, onEditRequest, onDeleteReque
                           </span>
                         )}
                       </td>
-                      <td style={{ maxWidth: '280px' }}>
-                        <div style={{ color: 'var(--text-main)', lineHeight: 1.4 }}>
-                          {item.perihal}
-                        </div>
-                      </td>
                       <td>
                         <span style={{ fontFamily: 'monospace', fontSize: '0.75rem', fontWeight: 600, color: item.takah !== '-' ? 'var(--text-title)' : 'var(--text-muted)' }}>
                           {item.takah}
                         </span>
                       </td>
                       <td>
-                        <div>
-                          <div style={{ fontWeight: 600, color: 'var(--text-title)' }}>{item.pic}</div>
-                          <div style={{ fontSize: '0.75rem', color: '#2563eb' }}>{item.no_pic}</div>
-                        </div>
+                        <div style={{ fontWeight: 600, color: 'var(--text-title)' }}>{item.pic}</div>
                       </td>
                       <td>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', alignment: 'flex-start' }}>

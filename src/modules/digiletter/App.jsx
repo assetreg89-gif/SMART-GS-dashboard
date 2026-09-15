@@ -16,7 +16,7 @@ import {
   deleteLetterFromSheets 
 } from './services/googleSheetsService';
 
-export default function App() {
+export default function App({ onBackHome }) {
   const [theme, setTheme] = useState(() => localStorage.getItem('digiletter_theme') || 'light');
   
   // Persist status User & Admin di sessionStorage
@@ -214,32 +214,6 @@ export default function App() {
     saveLetterToSheets(updatedLetter);
   };
 
-  // Jika belum login sebagai user maupun admin, tampilkan Layar Login Gerbang Utama
-  if (!isUserLoggedIn && !isAdmin) {
-    return (
-      <div className="app-container" data-theme={theme}>
-        <ToastNotification toast={toast} onClose={closeToast} />
-        <UserLoginScreen
-          onUserLoginSuccess={handleUserLoginSuccess}
-          onOpenAdminLogin={(directLogin = false) => {
-            if (directLogin) {
-              handleAdminLoginSuccess();
-            } else {
-              setIsAdminLoginOpen(true);
-            }
-          }}
-          theme={theme}
-          onToggleTheme={toggleTheme}
-        />
-        <AdminLoginModal
-          isOpen={isAdminLoginOpen}
-          onClose={() => setIsAdminLoginOpen(false)}
-          onLoginSuccess={handleAdminLoginSuccess}
-        />
-      </div>
-    );
-  }
-
   return (
     <div className="app-container" data-theme={theme}>
       <ToastNotification toast={toast} onClose={closeToast} />
@@ -254,6 +228,7 @@ export default function App() {
         onAdminLogout={handleAdminLogout}
         onUserLogout={handleUserLogout}
         onOpenRequestModal={() => { setEditingLetter(null); setIsRequestModalOpen(true); }}
+        onBackHome={onBackHome}
       />
 
       <main className="main-content">
