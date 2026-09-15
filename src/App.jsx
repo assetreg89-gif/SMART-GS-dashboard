@@ -189,7 +189,7 @@ export default function App() {
           <div className="navbar-container">
             {/* Logo & Brand */}
             <div className="navbar-left" style={{ cursor: 'pointer' }} onClick={() => setActiveModule('overview')}>
-              <img src="/telkom-logo.png" alt="Telkom Indonesia" style={{ height: '36px', objectFit: 'contain' }} onError={(e) => { e.target.style.display = 'none'; }} />
+              <img src="/telkom-icon.png" alt="Telkom Indonesia" style={{ height: '36px', objectFit: 'contain' }} onError={(e) => { e.target.style.display = 'none'; }} />
               <div className="navbar-brand-info">
                 <span className="navbar-brand-title" style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
                   SMART GS <span style={{ color: 'var(--primary-red)' }}>PORTAL</span>
