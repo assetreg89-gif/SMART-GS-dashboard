@@ -56,6 +56,9 @@ function OverviewDashboard({ onNavigate }) {
           <h1 className="hero-title" style={{ fontSize: '2.35rem', fontWeight: 800, color: 'var(--text-title)', lineHeight: 1.25, letterSpacing: '-0.025em', marginBottom: '0.75rem' }}>
             Selamat Datang di SMART GS Telkom Regional 3
           </h1>
+          <p style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--primary-red)', marginBottom: '0.5rem', letterSpacing: '0.01em' }}>
+            Secretariat Management & Administration Resource Tool for General Support
+          </p>
           <p className="hero-subtitle" style={{ color: 'var(--text-muted)', fontSize: '1.05rem', lineHeight: 1.6, margin: 0, fontWeight: 500 }}>
             Pusat akses terpadu manajemen reservasi fasilitas serta ruangan <strong>(TLT Space Hub)</strong> dan layanan persuratan digital <strong>(Digiletter)</strong>.
           </p>
@@ -191,8 +194,8 @@ export default function App() {
                 <span className="navbar-brand-title" style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
                   SMART GS <span style={{ color: 'var(--primary-red)' }}>PORTAL</span>
                 </span>
-                <span className="navbar-brand-subtitle" style={{ fontSize: '0.8125rem', color: 'var(--text-muted)', fontWeight: 600 }}>
-                  Telkom Regional 3
+                <span className="navbar-brand-subtitle" style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>
+                  Secretariat Management & Administration Resource Tool for General Support — Telkom Regional 3
                 </span>
               </div>
             </div>
