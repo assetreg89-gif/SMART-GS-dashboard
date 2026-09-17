@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { X, AlertTriangle, Calendar, MapPin, FileText } from 'lucide-react';
 import { MOCK_ROOMS } from '../data/mockData';
+import { useAuth } from '../../../auth/AuthContext';
 
 export default function BookingRequestModal({ isOpen, onClose, onSubmitBooking, rooms = MOCK_ROOMS, existingBookings = [], initialDate = null, initialRoom = null }) {
+  const { user } = useAuth();
   const roomList = rooms && rooms.length > 0 ? rooms : MOCK_ROOMS;
 
   const [formData, setFormData] = useState({
@@ -11,9 +13,9 @@ export default function BookingRequestModal({ isOpen, onClose, onSubmitBooking, 
     tanggal_pelaksanaan: initialDate || new Date().toISOString().split('T')[0],
     pukul_mulai: '09:00',
     pukul_selesai: '11:00',
-    unit_divisi: '',
-    pic: '',
-    pic_phone: '',
+    unit_divisi: user?.unit_kerja || '',
+    pic: user?.name || '',
+    pic_phone: user?.phone_number || '',
     agenda: '',
     keterangan: ''
   });
@@ -34,9 +36,9 @@ export default function BookingRequestModal({ isOpen, onClose, onSubmitBooking, 
         tanggal_pelaksanaan: initialDate || new Date().toISOString().split('T')[0],
         pukul_mulai: '09:00',
         pukul_selesai: '11:00',
-        unit_divisi: '',
-        pic: '',
-        pic_phone: '',
+        unit_divisi: user?.unit_kerja || '',
+        pic: user?.name || '',
+        pic_phone: user?.phone_number || '',
         agenda: '',
         keterangan: ''
       });

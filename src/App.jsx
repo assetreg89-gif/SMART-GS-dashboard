@@ -19,6 +19,9 @@ import {
 } from 'lucide-react';
 import DigiletterApp from './modules/digiletter/App.jsx';
 import TLTSpaceHubApp from './modules/tlt-space-hub/App.jsx';
+import { AuthProvider, useAuth } from './auth/AuthContext.jsx';
+import LoginPage from './auth/LoginPage.jsx';
+import UserProfileMenu from './components/UserProfileMenu.jsx';
 
 // Overview Portal Component
 function OverviewDashboard({ onNavigate }) {
@@ -168,7 +171,8 @@ function OverviewDashboard({ onNavigate }) {
   );
 }
 
-export default function App() {
+function MainApp() {
+  const { isAuthenticated, isLoading, user } = useAuth();
   const [activeModule, setActiveModule] = useState('overview'); // 'overview' | 'digiletter' | 'tlt-space-hub'
   const [theme, setTheme] = useState(() => localStorage.getItem('app-theme') || 'light');
 
@@ -181,9 +185,28 @@ export default function App() {
     setTheme(prev => prev === 'light' ? 'dark' : 'light');
   };
 
+  // Loading Screen saat inisialisasi Keycloak / Auth
+  if (isLoading) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-main)' }}>
+        <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
+          <img src="/telkom-icon.png" alt="Telkom" style={{ height: '48px', animation: 'pulse 1.5s infinite' }} />
+          <div style={{ color: 'var(--primary-red)', fontWeight: 700, fontSize: '1rem' }}>
+            Memuat Autentikasi SMART GS Telkom...
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Auth Gate: Jika belum login, WAJIB tampilkan LoginPage
+  if (!isAuthenticated) {
+    return <LoginPage theme={theme} toggleTheme={toggleTheme} />;
+  }
+
   return (
     <div className="app-container">
-      {/* Header Utama SMART GS Portal - Hanya tampil saat di Overview/Home */}
+      {/* Header Utama SMART GS Portal - Tampil saat di Overview/Home */}
       {activeModule === 'overview' && (
         <header className="app-header">
           <div className="navbar-container">
@@ -200,8 +223,8 @@ export default function App() {
               </div>
             </div>
 
-            {/* Theme Toggle */}
-            <div className="navbar-right">
+            {/* Right Actions: Theme Toggle & User Profile Menu */}
+            <div className="navbar-right" style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
               <button
                 onClick={toggleTheme}
                 className="btn btn-secondary btn-icon nav-theme-btn"
@@ -209,6 +232,9 @@ export default function App() {
               >
                 {theme === 'light' ? <Moon size={18} /> : <Sun size={18} color="#facc15" />}
               </button>
+
+              {/* User Profile Badge & Logout Dropdown */}
+              <UserProfileMenu />
             </div>
           </div>
         </header>
@@ -243,5 +269,13 @@ export default function App() {
         </footer>
       )}
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <MainApp />
+    </AuthProvider>
   );
 }

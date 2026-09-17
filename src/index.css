@@ -1219,4 +1219,164 @@ body::before {
   }
 }
 
+/* =========================================================
+   CLEAN MINIMALIST LOGIN PAGE (SMART GS PORTAL)
+   ========================================================= */
+
+.login-page-clean-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: var(--bg-color);
+  background-image: var(--bg-image);
+  position: relative;
+  overflow-x: hidden;
+}
+
+.login-clean-card {
+  width: 100%;
+  max-width: 440px;
+  padding: 2.75rem 2.25rem 2.25rem;
+  border-radius: 24px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  box-shadow: 0 20px 48px -8px rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(16px);
+  animation: fadeInScale 0.35s ease-out;
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.btn-login-sso-google {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1.25rem;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #1f2937;
+  border: 1.5px solid #e2e8f0;
+  font-size: 0.925rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="dark"] .btn-login-sso-google {
+  background: #1e293b;
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.btn-login-sso-google:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(66, 133, 244, 0.18);
+  border-color: #4285f4;
+}
+
+.btn-login-sso-keycloak {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1.25rem;
+  border-radius: 12px;
+  background: rgba(224, 0, 0, 0.06);
+  color: var(--primary-red);
+  border: 1.5px solid rgba(224, 0, 0, 0.2);
+  font-size: 0.925rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-login-sso-keycloak:hover {
+  background: rgba(224, 0, 0, 0.12);
+  transform: translateY(-1px);
+  border-color: var(--primary-red);
+  box-shadow: 0 6px 20px rgba(224, 0, 0, 0.12);
+}
+
+.login-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.login-divider::before,
+.login-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.login-divider span {
+  padding: 0 0.75rem;
+}
+
+.btn-demo-quick {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 10px;
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  color: var(--text-main);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-demo-quick:hover {
+  transform: translateY(-1px);
+  background: var(--card-bg);
+  border-color: var(--primary-red);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.user-profile-trigger-btn:hover {
+  border-color: var(--primary-red) !important;
+  background: var(--input-bg) !important;
+}
+
+.btn-dropdown-logout:hover {
+  background: #e00000 !important;
+  color: #ffffff !important;
+}
+
+@keyframes fadeInSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+
 

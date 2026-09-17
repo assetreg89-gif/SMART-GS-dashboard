@@ -9,6 +9,7 @@ import AddRoomModal from './components/AddRoomModal';
 import AdminLoginModal from './components/AdminLoginModal';
 import ConfirmDeleteModal from './components/ConfirmDeleteModal';
 import ToastNotification from './components/ToastNotification';
+import { useAuth } from '../../auth/AuthContext';
 
 import { MOCK_ROOMS, INITIAL_BOOKINGS } from './data/mockData';
 import {
@@ -24,17 +25,49 @@ import {
   subscribeToRooms
 } from './lib/supabase';
 
+const STORAGE_KEY_ROOMS = 'tlt_space_hub_rooms';
+const STORAGE_KEY_BOOKINGS = 'tlt_space_hub_bookings';
+
 export default function App({ onBackHome }) {
+  const { user } = useAuth();
   const [theme, setTheme] = useState(() => localStorage.getItem('tlt_theme') || 'light');
   const [activeTab, setActiveTab] = useState('monitoring');
   
-  // Persist status admin di sessionStorage agar tidak hilang saat refresh
+  // Sinkronisasi otomatis: Jika user login sebagai admin_gs di portal, langsung beri akses admin
   const [isAdmin, setIsAdmin] = useState(() => {
+    if (user?.role === 'admin_gs') return true;
     return sessionStorage.getItem('tlt_is_admin') === 'true';
   });
 
-  const [rooms, setRooms] = useState(MOCK_ROOMS);
-  const [bookings, setBookings] = useState(INITIAL_BOOKINGS);
+  useEffect(() => {
+    if (user?.role === 'admin_gs') {
+      setIsAdmin(true);
+      sessionStorage.setItem('tlt_is_admin', 'true');
+    }
+  }, [user]);
+
+  const [rooms, setRooms] = useState(() => {
+    const savedRooms = localStorage.getItem(STORAGE_KEY_ROOMS);
+    if (savedRooms) {
+      try {
+        const parsed = JSON.parse(savedRooms);
+        if (parsed && parsed.length > 0) return parsed;
+      } catch (e) {}
+    }
+    return MOCK_ROOMS;
+  });
+
+  const [bookings, setBookings] = useState(() => {
+    const savedBookings = localStorage.getItem(STORAGE_KEY_BOOKINGS);
+    if (savedBookings) {
+      try {
+        const parsed = JSON.parse(savedBookings);
+        if (parsed && parsed.length >= INITIAL_BOOKINGS.length) return parsed;
+      } catch (e) {}
+    }
+    localStorage.setItem(STORAGE_KEY_BOOKINGS, JSON.stringify(INITIAL_BOOKINGS));
+    return INITIAL_BOOKINGS;
+  });
 
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const [bookingModalInitialDate, setBookingModalInitialDate] = useState(null);
@@ -237,42 +270,56 @@ export default function App({ onBackHome }) {
   };
 
   const handleCreateBooking = async (newBooking) => {
-    setBookings([newBooking, ...bookings]);
+    const updated = [newBooking, ...bookings];
+    setBookings(updated);
+    localStorage.setItem(STORAGE_KEY_BOOKINGS, JSON.stringify(updated));
     showToastNotification('Pengajuan Terkirim', `Peminjaman ruangan "${newBooking.ruangan}" berhasil dibuat.`, 'success');
 
     const result = await insertBookingToSupabase(newBooking);
     if (result) {
-      setBookings(prev => prev.map(b => b.id === newBooking.id ? result : b));
+      const synced = updated.map(b => b.id === newBooking.id ? result : b);
+      setBookings(synced);
+      localStorage.setItem(STORAGE_KEY_BOOKINGS, JSON.stringify(synced));
     }
   };
 
   const handleSaveApproval = async (updatedData) => {
-    setBookings(bookings.map(b => b.id === updatedData.id ? { ...b, ...updatedData } : b));
+    const updated = bookings.map(b => b.id === updatedData.id ? { ...b, ...updatedData } : b);
+    setBookings(updated);
+    localStorage.setItem(STORAGE_KEY_BOOKINGS, JSON.stringify(updated));
     showToastNotification('Data Diperbarui', 'Status dan detail pengajuan telah berhasil diperbarui.', 'admin');
     await updateBookingStatusInSupabase(updatedData.id, updatedData);
   };
 
   const handleDeleteBooking = async (bookingId) => {
     const targetBooking = bookings.find(b => b.id === bookingId);
-    setBookings(bookings.filter(b => b.id !== bookingId));
+    const updated = bookings.filter(b => b.id !== bookingId);
+    setBookings(updated);
+    localStorage.setItem(STORAGE_KEY_BOOKINGS, JSON.stringify(updated));
     showToastNotification('Pengajuan Dihapus', `Pengajuan agenda "${targetBooking ? targetBooking.agenda : ''}" telah dihapus.`, 'admin');
     await deleteBookingFromSupabase(bookingId);
   };
 
   const handleSaveRoom = async (roomData) => {
+    let updatedRooms;
     if (roomToEdit) {
-      setRooms(rooms.map(r => r.id === roomData.id ? roomData : r));
+      updatedRooms = rooms.map(r => r.id === roomData.id ? roomData : r);
+      setRooms(updatedRooms);
       showToastNotification('Ruangan Diperbarui', `Detail ruangan "${roomData.name}" berhasil diperbarui.`, 'admin');
     } else {
-      setRooms([...rooms, roomData]);
+      updatedRooms = [...rooms, roomData];
+      setRooms(updatedRooms);
       showToastNotification('Ruangan Ditambahkan', `Ruangan baru "${roomData.name}" berhasil ditambahkan ke katalog.`, 'admin');
     }
+    localStorage.setItem(STORAGE_KEY_ROOMS, JSON.stringify(updatedRooms));
     await upsertRoomToSupabase(roomData);
   };
 
   const handleDeleteRoom = async (roomId) => {
     const targetRoom = rooms.find(r => r.id === roomId);
-    setRooms(rooms.filter(r => r.id !== roomId));
+    const updatedRooms = rooms.filter(r => r.id !== roomId);
+    setRooms(updatedRooms);
+    localStorage.setItem(STORAGE_KEY_ROOMS, JSON.stringify(updatedRooms));
     showToastNotification('Ruangan Dihapus', `Ruangan "${targetRoom ? targetRoom.name : ''}" telah dihapus dari katalog.`, 'admin');
     await deleteRoomFromSupabase(roomId);
   };
