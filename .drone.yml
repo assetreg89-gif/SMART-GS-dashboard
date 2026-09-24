@@ -1,0 +1,26 @@
+kind: pipeline
+type: docker
+name: smart-gs-dashboard-pipeline
+
+trigger:
+  branch:
+    - main
+    - master
+  event:
+    - push
+    - pull_request
+    - custom
+
+steps:
+  - name: build-frontend
+    image: node:20-alpine
+    environment:
+      VITE_SUPABASE_URL:
+        from_secret: VITE_SUPABASE_URL
+      VITE_SUPABASE_ANON_KEY:
+        from_secret: VITE_SUPABASE_ANON_KEY
+      VITE_SHEETS_WEBAPP_URL:
+        from_secret: VITE_SHEETS_WEBAPP_URL
+    commands:
+      - npm ci
+      - npm run build
