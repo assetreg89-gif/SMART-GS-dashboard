@@ -1,12 +1,42 @@
 import Keycloak from 'keycloak-js';
 
+// Parse issuer jika tersedia (misal: https://auth.treg3.com/realms/smart)
+const issuer = import.meta.env.VITE_KEYCLOAK_ISSUER;
+let defaultUrl = import.meta.env.VITE_KEYCLOAK_URL || 'https://auth.treg3.com';
+let defaultRealm = import.meta.env.VITE_KEYCLOAK_REALM || 'smart';
+
+if (issuer) {
+  try {
+    const parsed = new URL(issuer);
+    defaultUrl = parsed.origin;
+    const parts = parsed.pathname.split('/').filter(Boolean);
+    const realmsIndex = parts.indexOf('realms');
+    if (realmsIndex !== -1 && parts[realmsIndex + 1]) {
+      defaultRealm = parts[realmsIndex + 1];
+    }
+  } catch (e) {
+    console.warn('Error parsing VITE_KEYCLOAK_ISSUER:', e);
+  }
+}
+
 const keycloakConfig = {
-  url: import.meta.env.VITE_KEYCLOAK_URL || 'http://localhost:8080',
-  realm: import.meta.env.VITE_KEYCLOAK_REALM || 'smart-gs',
-  clientId: import.meta.env.VITE_KEYCLOAK_CLIENT_ID || 'smart-gs-frontend'
+  url: defaultUrl,
+  realm: defaultRealm,
+  clientId: import.meta.env.VITE_KEYCLOAK_CLIENT_ID || 'smart-gs'
 };
 
 export const keycloak = new Keycloak(keycloakConfig);
+
+const getRedirectUri = () => {
+  const customRedirect = import.meta.env.VITE_KEYCLOAK_REDIRECT_URI;
+  if (customRedirect && customRedirect.trim() !== '') {
+    if (customRedirect.startsWith('/')) {
+      return `${window.location.origin}${customRedirect}`;
+    }
+    return customRedirect;
+  }
+  return window.location.origin;
+};
 
 export const initKeycloak = async () => {
   try {
@@ -26,13 +56,13 @@ export const initKeycloak = async () => {
 export const loginWithKeycloakGoogle = () => {
   return keycloak.login({
     idpHint: 'google',
-    redirectUri: window.location.origin
+    redirectUri: getRedirectUri()
   });
 };
 
 export const loginWithKeycloakStandard = () => {
   return keycloak.login({
-    redirectUri: window.location.origin
+    redirectUri: getRedirectUri()
   });
 };
 
@@ -41,3 +71,4 @@ export const logoutKeycloak = () => {
     redirectUri: window.location.origin
   });
 };
+

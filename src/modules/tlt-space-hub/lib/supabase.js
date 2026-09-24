@@ -7,12 +7,17 @@ const getSupabaseConfig = () => {
   const storedUrl = localStorage.getItem('tlt_supabase_url');
   const storedKey = localStorage.getItem('tlt_supabase_key');
 
-  const url = storedUrl || envUrl || '';
-  const key = storedKey || envKey || '';
+  let rawUrl = (storedUrl || envUrl || '').trim();
+  if (rawUrl.includes('/rest/v1')) {
+    rawUrl = rawUrl.split('/rest/v1')[0];
+  }
+  const url = rawUrl.replace(/\/+$/, '');
+  const key = (storedKey || envKey || '').trim();
 
   const isConfigured = Boolean(url && key && url.includes('supabase.co'));
   return { url, key, isConfigured };
 };
+
 
 export const getSupabaseClient = () => {
   const { url, key, isConfigured } = getSupabaseConfig();
