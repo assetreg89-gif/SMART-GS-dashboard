@@ -48,19 +48,17 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        VITE_AUTH_MODE: ${VITE_AUTH_MODE:-simulator}
-        VITE_KEYCLOAK_ISSUER: ${VITE_KEYCLOAK_ISSUER}
-        VITE_KEYCLOAK_CLIENT_ID: ${VITE_KEYCLOAK_CLIENT_ID}
-        VITE_KEYCLOAK_REDIRECT_URL: ${VITE_KEYCLOAK_REDIRECT_URL}
-        VITE_SUPABASE_URL: ${VITE_SUPABASE_URL}
-        VITE_SUPABASE_ANON_KEY: ${VITE_SUPABASE_ANON_KEY}
-        VITE_SHEETS_WEBAPP_URL: ${VITE_SHEETS_WEBAPP_URL}
+        VITE_AUTH_MODE: ${VITE_AUTH_MODE:-keycloak}
+        VITE_KEYCLOAK_ISSUER: ${VITE_KEYCLOAK_ISSUER:-https://auth.treg3.com/realms/smart}
+        VITE_KEYCLOAK_CLIENT_ID: ${VITE_KEYCLOAK_CLIENT_ID:-smart-gs}
+        VITE_KEYCLOAK_REDIRECT_URL: ${VITE_KEYCLOAK_REDIRECT_URL:-http://localhost:14071/auth/callback}
+        VITE_SUPABASE_URL: ${VITE_SUPABASE_URL:-https://iuneyrwdcnlxtdtaukbu.supabase.co}
+        VITE_SUPABASE_ANON_KEY: ${VITE_SUPABASE_ANON_KEY:-}
+        VITE_SHEETS_WEBAPP_URL: ${VITE_SHEETS_WEBAPP_URL:-}
     container_name: smart_gs_frontend
     restart: always
     ports:
       - "${PORT:-14071}:80"
-    depends_on:
-      - keycloak
     networks:
       - smart_gs_network
 

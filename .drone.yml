@@ -40,5 +40,5 @@ steps:
       - apk add --no-cache docker-cli-compose
       - docker version
       - docker compose version
-      - docker compose up -d --build --remove-orphans
+      - docker compose up -d --build --remove-orphans frontend
       - docker image prune -f
