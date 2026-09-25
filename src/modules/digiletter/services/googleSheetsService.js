@@ -157,7 +157,7 @@ function doPost(e) {
 const SHEETS_URL_KEY = 'digiletter_sheets_webapp_url';
 export const DEFAULT_SHEETS_WEBAPP_URL = (import.meta.env && import.meta.env.VITE_SHEETS_WEBAPP_URL)
   ? import.meta.env.VITE_SHEETS_WEBAPP_URL
-  : 'https://script.google.com/macros/s/AKfycbw8EukjtEm_H6RCXqaf_frAquRlBOXHXNzgjo5XRS1aFHsZefMvlquN0PLH1SwGTk2-/exec';
+  : 'https://script.google.com/macros/s/AKfycbw5ubocE1T5uT9Pzw4jX-3ptUXDmif8wb_I5ZZw1qXzwQLIynZSAqQYG0wexSqbqAI/exec';
 
 export function getStoredSheetsUrl() {
   return localStorage.getItem(SHEETS_URL_KEY) || DEFAULT_SHEETS_WEBAPP_URL;
@@ -167,6 +167,23 @@ export function setStoredSheetsUrl(url) {
   localStorage.setItem(SHEETS_URL_KEY, url.trim());
 }
 
+export function cleanDateStr(val) {
+  if (!val) return new Date().toISOString().split('T')[0];
+  if (typeof val === 'string') {
+    if (val.includes('T')) return val.split('T')[0];
+    const trimmed = val.trim();
+    if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) return trimmed;
+    const parsed = new Date(trimmed);
+    if (!isNaN(parsed.getTime())) {
+      const y = parsed.getFullYear();
+      const m = String(parsed.getMonth() + 1).padStart(2, '0');
+      const d = String(parsed.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    }
+  }
+  return String(val);
+}
+
 /**
  * Mengambil seluruh data surat dari Google Sheets Web App
  */
@@ -174,7 +191,9 @@ export async function fetchLettersFromSheets(webAppUrl = getStoredSheetsUrl()) {
   if (!webAppUrl) return null;
 
   try {
-    const response = await fetch(webAppUrl);
+    const separator = webAppUrl.includes('?') ? '&' : '?';
+    const noCacheUrl = `${webAppUrl}${separator}_t=${Date.now()}`;
+    const response = await fetch(noCacheUrl, { cache: 'no-store' });
     const result = await response.json();
     if (result && result.status === 'success' && Array.isArray(result.data)) {
       return result.data.map((item, idx) => {

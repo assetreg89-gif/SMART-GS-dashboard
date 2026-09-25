@@ -51,7 +51,7 @@ export default function App({ onBackHome }) {
     if (savedRooms) {
       try {
         const parsed = JSON.parse(savedRooms);
-        if (parsed && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
       } catch (e) {}
     }
     return MOCK_ROOMS;
@@ -62,10 +62,9 @@ export default function App({ onBackHome }) {
     if (savedBookings) {
       try {
         const parsed = JSON.parse(savedBookings);
-        if (parsed && parsed.length >= INITIAL_BOOKINGS.length) return parsed;
+        if (Array.isArray(parsed)) return parsed;
       } catch (e) {}
     }
-    localStorage.setItem(STORAGE_KEY_BOOKINGS, JSON.stringify(INITIAL_BOOKINGS));
     return INITIAL_BOOKINGS;
   });
 
@@ -193,15 +192,18 @@ export default function App({ onBackHome }) {
 
       if (checkSupabaseStatus()) {
         const supabaseRooms = await fetchRoomsFromSupabase();
-        if (supabaseRooms && supabaseRooms.length > 0) {
-          setRooms(mapRealRoomImages(supabaseRooms));
+        if (supabaseRooms && Array.isArray(supabaseRooms) && supabaseRooms.length > 0) {
+          const mapped = mapRealRoomImages(supabaseRooms);
+          setRooms(mapped);
+          localStorage.setItem(STORAGE_KEY_ROOMS, JSON.stringify(mapped));
         } else {
           setRooms(mapRealRoomImages(MOCK_ROOMS));
         }
 
         const supabaseBookings = await fetchBookingsFromSupabase();
-        if (supabaseBookings && supabaseBookings.length > 0) {
+        if (supabaseBookings !== null && Array.isArray(supabaseBookings)) {
           setBookings(supabaseBookings);
+          localStorage.setItem(STORAGE_KEY_BOOKINGS, JSON.stringify(supabaseBookings));
         }
       } else {
         setRooms(mapRealRoomImages(MOCK_ROOMS));
@@ -222,10 +224,10 @@ export default function App({ onBackHome }) {
       });
     }
 
-    // Fallback Background Polling every 10 seconds
+    // Fallback Background Polling every 4 seconds
     const intervalId = setInterval(() => {
       loadData(true);
-    }, 10000);
+    }, 4000);
 
     return () => {
       clearInterval(intervalId);

@@ -139,9 +139,30 @@ export const insertBookingToSupabase = async (bookingData) => {
   const client = getSupabaseClient();
   if (!client) return null;
   try {
+    const todayStr = new Date().toISOString().split('T')[0];
+    const sanitized = {
+      id: bookingData.id || `BK-${Date.now().toString().slice(-6)}`,
+      tanggal_konfirmasi: bookingData.tanggal_konfirmasi || todayStr,
+      tanggal_pelaksanaan: bookingData.tanggal_pelaksanaan || todayStr,
+      lama_hari: Number(bookingData.lama_hari) || 1,
+      pukul_mulai: bookingData.pukul_mulai || '09:00',
+      pukul_selesai: bookingData.pukul_selesai || '11:00',
+      ruangan: bookingData.ruangan || '',
+      floor: String(bookingData.floor || '9'),
+      unit_divisi: bookingData.unit_divisi || '-',
+      pic: bookingData.pic || '-',
+      pic_phone: bookingData.pic_phone || '-',
+      agenda: bookingData.agenda || '-',
+      pemberi_izin: bookingData.pemberi_izin || '-',
+      status: bookingData.status || 'Menunggu Persetujuan',
+      keterangan: bookingData.keterangan || '',
+      nota_dinas_url: bookingData.nota_dinas_url || '',
+      nota_dinas_name: bookingData.nota_dinas_name || ''
+    };
+
     const { data, error } = await client
       .from('bookings')
-      .insert([bookingData])
+      .insert([sanitized])
       .select();
 
     if (error) {
@@ -159,9 +180,27 @@ export const updateBookingStatusInSupabase = async (id, updatedFields) => {
   const client = getSupabaseClient();
   if (!client) return null;
   try {
+    const sanitized = {};
+    const allowedKeys = [
+      'ruangan', 'floor', 'tanggal_konfirmasi', 'tanggal_pelaksanaan',
+      'lama_hari', 'pukul_mulai', 'pukul_selesai', 'unit_divisi', 'pic',
+      'pic_phone', 'agenda', 'pemberi_izin', 'status', 'keterangan',
+      'nota_dinas_url', 'nota_dinas_name'
+    ];
+
+    allowedKeys.forEach(key => {
+      if (updatedFields[key] !== undefined) {
+        sanitized[key] = updatedFields[key];
+      }
+    });
+
+    if (sanitized.lama_hari !== undefined) {
+      sanitized.lama_hari = Number(sanitized.lama_hari) || 1;
+    }
+
     const { data, error } = await client
       .from('bookings')
-      .update(updatedFields)
+      .update(sanitized)
       .eq('id', id)
       .select();
 
@@ -220,9 +259,20 @@ export const upsertRoomToSupabase = async (roomData) => {
   const client = getSupabaseClient();
   if (!client) return null;
   try {
+    const sanitized = {
+      id: roomData.id,
+      name: roomData.name || '',
+      floor: String(roomData.floor || '9'),
+      capacity: Number(roomData.capacity) || 0,
+      facilities: Array.isArray(roomData.facilities) ? roomData.facilities : [],
+      is_active: roomData.is_active !== undefined ? Boolean(roomData.is_active) : true,
+      image: roomData.image || '',
+      description: roomData.description || ''
+    };
+
     const { data, error } = await client
       .from('rooms')
-      .upsert([roomData], { onConflict: 'id' })
+      .upsert([sanitized], { onConflict: 'id' })
       .select();
 
     if (error) {

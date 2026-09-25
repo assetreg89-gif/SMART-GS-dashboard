@@ -107,7 +107,6 @@ export default function Navbar({
               <Sun size={18} color="#facc15" />
             )}
           </button>
-
         </div>
 
       </div>

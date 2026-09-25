@@ -15,8 +15,18 @@ import {
   saveLetterToSheets, 
   deleteLetterFromSheets 
 } from './services/googleSheetsService';
+import {
+  fetchLettersFromSupabase,
+  insertLetterToSupabase,
+  updateLetterInSupabase,
+  deleteLetterFromSupabase,
+  subscribeToLetters,
+  checkSupabaseStatus
+} from './lib/supabase';
 
 import ExportExcelModal from './components/ExportExcelModal';
+
+const STORAGE_KEY_LETTERS = 'digiletter_letters';
 
 export default function App({ onBackHome }) {
   const [theme, setTheme] = useState(() => localStorage.getItem('digiletter_theme') || 'light');
@@ -34,7 +44,16 @@ export default function App({ onBackHome }) {
     return sessionStorage.getItem('digiletter_is_admin') === 'true';
   });
 
-  const [letters, setLetters] = useState(MOCK_LETTTERS);
+  const [letters, setLetters] = useState(() => {
+    const saved = localStorage.getItem(STORAGE_KEY_LETTERS);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) return parsed;
+      } catch (e) {}
+    }
+    return [];
+  });
 
   // Modals state
   const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
@@ -59,15 +78,57 @@ export default function App({ onBackHome }) {
     setToast(prev => ({ ...prev, isOpen: false }));
   };
 
-  // Muat data dari Google Sheets saat aplikasi pertama dibuka (jika URL sudah diset)
+  const isModalOpen = isRequestModalOpen || Boolean(selectedLetterForApproval) || isAdminLoginOpen || isExportModalOpen;
+  const isModalOpenRef = React.useRef(isModalOpen);
+
   useEffect(() => {
-    async function loadSheetsData() {
+    isModalOpenRef.current = isModalOpen;
+  }, [isModalOpen]);
+
+  // Muat data langsung dari Google Sheets Database secara otomatis & real-time
+  useEffect(() => {
+    let lettersChannel = null;
+
+    async function loadData(isBackground = false) {
+      if (isBackground && isModalOpenRef.current) return;
+
+      // 1. Ambil data aktual dari Google Sheets
       const sheetsData = await fetchLettersFromSheets();
-      if (sheetsData && sheetsData.length > 0) {
+      if (sheetsData !== null && Array.isArray(sheetsData)) {
         setLetters(sheetsData);
+        localStorage.setItem(STORAGE_KEY_LETTERS, JSON.stringify(sheetsData));
+        return;
+      }
+
+      // 2. Fallback ke Supabase jika Google Sheets belum merespon
+      if (checkSupabaseStatus()) {
+        const supabaseData = await fetchLettersFromSupabase();
+        if (supabaseData !== null && Array.isArray(supabaseData)) {
+          setLetters(supabaseData);
+          localStorage.setItem(STORAGE_KEY_LETTERS, JSON.stringify(supabaseData));
+        }
       }
     }
-    loadSheetsData();
+
+    loadData(false);
+
+    if (checkSupabaseStatus()) {
+      lettersChannel = subscribeToLetters(() => {
+        loadData(true);
+      });
+    }
+
+    // Auto-polling setiap 4 detik agar perubahan / penghapusan di spreadsheet langsung terupdate di web
+    const intervalId = setInterval(() => {
+      loadData(true);
+    }, 4000);
+
+    return () => {
+      clearInterval(intervalId);
+      if (lettersChannel && typeof lettersChannel.unsubscribe === 'function') {
+        lettersChannel.unsubscribe();
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -109,13 +170,19 @@ export default function App({ onBackHome }) {
   };
 
   // Submit Pengajuan Baru / Edit Publik
-  const handleSubmitRequest = (requestData) => {
+  const handleSubmitRequest = async (requestData) => {
     let updatedItem;
+    let updatedLetters;
     if (editingLetter) {
       // Update data pengajuan lama
       updatedItem = { ...editingLetter, ...requestData };
-      setLetters(prev => prev.map(item => item.id === requestData.id ? updatedItem : item));
+      updatedLetters = letters.map(item => item.id === requestData.id ? updatedItem : item);
+      setLetters(updatedLetters);
+      localStorage.setItem(STORAGE_KEY_LETTERS, JSON.stringify(updatedLetters));
       showToast('Pengajuan Diperbarui', `Detail pengajuan perihal "${requestData.perihal}" telah diperbarui.`, 'success');
+      
+      // Sync update ke Supabase & Google Sheets
+      await updateLetterInSupabase(updatedItem.id, updatedItem);
     } else {
       // Tambah pengajuan baru
       updatedItem = {
@@ -125,8 +192,13 @@ export default function App({ onBackHome }) {
         takah: '-',
         status: 'Menunggu Persetujuan'
       };
-      setLetters(prev => [updatedItem, ...prev]);
+      updatedLetters = [updatedItem, ...letters];
+      setLetters(updatedLetters);
+      localStorage.setItem(STORAGE_KEY_LETTERS, JSON.stringify(updatedLetters));
       showToast('Pengajuan Terkirim', `Pengajuan nomor surat perihal "${requestData.perihal}" berhasil terkirim.`, 'success');
+      
+      // Sync insert ke Supabase
+      await insertLetterToSupabase(updatedItem);
     }
     setEditingLetter(null);
 
@@ -134,18 +206,21 @@ export default function App({ onBackHome }) {
     saveLetterToSheets(updatedItem);
   };
 
-  // Membatalkan Pengajuan (CRUD Publik)
-  const handleDeleteRequest = (letterItem) => {
-    if (letterItem.status === 'Disetujui') {
-      showToast('Gagal Membatalkan', 'Pengajuan yang sudah disetujui tidak dapat dibatalkan.', 'error');
-      return;
-    }
+  // Membatalkan / Menghapus Pengajuan Surat
+  const handleDeleteRequest = async (letterItem) => {
+    const isApproved = letterItem.status === 'Disetujui' || (letterItem.nomor_surat && letterItem.nomor_surat !== '-');
+    const confirmMessage = isApproved
+      ? `Apakah Anda yakin ingin menghapus surat yang sudah terbit "${letterItem.perihal}" (Nomor: ${letterItem.nomor_surat || '-'})? Tindakan ini akan menghapusnya dari database.`
+      : `Apakah Anda yakin ingin menghapus pengajuan surat perihal "${letterItem.perihal}" oleh ${letterItem.pic}?`;
 
-    if (window.confirm(`Apakah Anda yakin ingin membatalkan pengajuan perihal "${letterItem.perihal}" oleh ${letterItem.pic}?`)) {
-      setLetters(prev => prev.filter(item => item.id !== letterItem.id));
-      showToast('Pengajuan Dibatalkan', 'Pengajuan nomor surat telah berhasil dihapus.', 'success');
+    if (window.confirm(confirmMessage)) {
+      const updatedLetters = letters.filter(item => item.id !== letterItem.id);
+      setLetters(updatedLetters);
+      localStorage.setItem(STORAGE_KEY_LETTERS, JSON.stringify(updatedLetters));
+      showToast('Surat Berhasil Dihapus', `Data surat "${letterItem.perihal}" telah dihapus dari database.`, 'success');
       
-      // Sync delete ke Google Sheets
+      // Sync delete ke Supabase & Google Sheets
+      await deleteLetterFromSupabase(letterItem.id);
       deleteLetterFromSheets(letterItem.id);
     }
   };
@@ -210,12 +285,14 @@ export default function App({ onBackHome }) {
   };
 
   // Verifikasi / Approve oleh Admin Sekdiv
-  const handleConfirmApprove = (updatedLetter) => {
-    setLetters(prev => prev.map(item => {
+  const handleConfirmApprove = async (updatedLetter) => {
+    const updated = letters.map(item => {
       const isMatch = (item.id && updatedLetter.id && item.id === updatedLetter.id) ||
         (item.perihal === updatedLetter.perihal && item.pic === updatedLetter.pic);
       return isMatch ? updatedLetter : item;
-    }));
+    });
+    setLetters(updated);
+    localStorage.setItem(STORAGE_KEY_LETTERS, JSON.stringify(updated));
 
     showToast(
       'Nomor Surat Diterbitkan',
@@ -223,7 +300,8 @@ export default function App({ onBackHome }) {
       'success'
     );
 
-    // Sync ke Google Sheets
+    // Sync ke Supabase & Google Sheets
+    await updateLetterInSupabase(updatedLetter.id, updatedLetter);
     saveLetterToSheets(updatedLetter);
   };
 
