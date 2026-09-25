@@ -10,10 +10,17 @@ trigger:
     - push
     - custom
 
+volumes:
+  - name: docker-sock
+    host:
+      path: /var/run/docker.sock
+
 steps:
-  # Stage 1: Build Frontend Production Bundle dengan Seluruh Environment Secrets
-  - name: build-frontend
-    image: node:20-alpine
+  - name: deploy
+    image: docker:cli
+    volumes:
+      - name: docker-sock
+        path: /var/run/docker.sock
     environment:
       VITE_AUTH_MODE:
         from_secret: VITE_AUTH_MODE
@@ -30,5 +37,8 @@ steps:
       VITE_SHEETS_WEBAPP_URL:
         from_secret: VITE_SHEETS_WEBAPP_URL
     commands:
-      - npm ci
-      - npm run build
+      - apk add --no-cache docker-cli-compose
+      - docker version
+      - docker compose version
+      - docker compose up -d --build --remove-orphans
+      - docker image prune -f
