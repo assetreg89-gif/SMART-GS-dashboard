@@ -11,7 +11,7 @@ trigger:
     - custom
 
 steps:
-  # Stage 1: Build & Test Frontend
+  # Stage 1: Build & Test Frontend Production Bundle
   - name: build-frontend
     image: node:20-alpine
     environment:
@@ -24,27 +24,3 @@ steps:
     commands:
       - npm ci
       - npm run build
-
-  # Stage 2: Deploy otomatis dengan Docker Compose di Server via SSH
-  - name: deploy-via-docker-compose
-    image: appleboy/drone-ssh
-    settings:
-      host:
-        from_secret: SSH_HOST
-      username:
-        from_secret: SSH_USER
-      key:
-        from_secret: SSH_KEY
-      port: 22
-      script:
-        - cd /var/www/SMART-GS-dashboard || cd ~/SMART-GS-dashboard || cd SMART-GS-dashboard
-        - git pull origin main
-        - docker compose down
-        - docker compose up -d --build
-    when:
-      branch:
-        - main
-        - master
-      event:
-        - push
-        - custom
