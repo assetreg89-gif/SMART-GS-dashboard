@@ -11,10 +11,18 @@ trigger:
     - custom
 
 steps:
-  # Stage 1: Build & Test Frontend Production Bundle
+  # Stage 1: Build Frontend Production Bundle dengan Seluruh Environment Secrets
   - name: build-frontend
     image: node:20-alpine
     environment:
+      VITE_AUTH_MODE:
+        from_secret: VITE_AUTH_MODE
+      VITE_KEYCLOAK_ISSUER:
+        from_secret: VITE_KEYCLOAK_ISSUER
+      VITE_KEYCLOAK_CLIENT_ID:
+        from_secret: VITE_KEYCLOAK_CLIENT_ID
+      VITE_KEYCLOAK_REDIRECT_URL:
+        from_secret: VITE_KEYCLOAK_REDIRECT_URL
       VITE_SUPABASE_URL:
         from_secret: VITE_SUPABASE_URL
       VITE_SUPABASE_ANON_KEY:
