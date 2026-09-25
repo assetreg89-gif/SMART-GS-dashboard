@@ -8,8 +8,11 @@ import {
 } from 'lucide-react';
 
 export default function LoginPage({ theme, toggleTheme }) {
-  const { login } = useAuth();
+  const { login, authMode } = useAuth();
   const [isConnecting, setIsConnecting] = useState(false);
+
+  const isKeycloakMode = authMode === 'keycloak' || (import.meta.env.VITE_AUTH_MODE || '').toLowerCase() === 'keycloak';
+  const buttonLabel = isKeycloakMode ? 'Masuk/Login dengan LDAP' : 'Masuk/Login dengan non LDAP';
 
   const handleLoginClick = () => {
     setIsConnecting(true);
@@ -83,7 +86,7 @@ export default function LoginPage({ theme, toggleTheme }) {
             ) : (
               <>
                 <ShieldCheck size={20} color="var(--primary-red)" />
-                <span>Masuk/Login</span>
+                <span>{buttonLabel}</span>
               </>
             )}
           </button>
