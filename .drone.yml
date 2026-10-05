@@ -17,28 +17,38 @@ volumes:
 
 steps:
   - name: deploy
-    image: docker:cli
+    image: docker:29.8.1-cli-alpine3.24
     volumes:
       - name: docker-sock
         path: /var/run/docker.sock
     environment:
-      VITE_AUTH_MODE:
-        from_secret: VITE_AUTH_MODE
-      VITE_KEYCLOAK_ISSUER:
-        from_secret: VITE_KEYCLOAK_ISSUER
-      VITE_KEYCLOAK_CLIENT_ID:
-        from_secret: VITE_KEYCLOAK_CLIENT_ID
-      VITE_KEYCLOAK_REDIRECT_URI:
-        from_secret: VITE_KEYCLOAK_REDIRECT_URI
-      VITE_SUPABASE_URL:
-        from_secret: VITE_SUPABASE_URL
-      VITE_SUPABASE_ANON_KEY:
-        from_secret: VITE_SUPABASE_ANON_KEY
-      VITE_SHEETS_WEBAPP_URL:
-        from_secret: VITE_SHEETS_WEBAPP_URL
+      SMART_GS_ENV_FILE:
+        from_secret: SMART_GS_ENV_FILE
     commands:
-      - apk add --no-cache docker-cli-compose
-      - docker version
-      - docker compose version
-      - docker compose up -d --build --remove-orphans frontend
-      - docker image prune -f
+      - |
+        set -eu
+        umask 077
+        printf '%s\n' "$SMART_GS_ENV_FILE" > .env
+        trap 'rm -f .env' EXIT
+
+        export COMPOSE_PROJECT_NAME=smart-gs
+        docker version
+        docker compose version
+        docker compose config --quiet
+        docker compose up -d --build --remove-orphans frontend
+
+        container_id="$(docker compose ps -q frontend)"
+        test -n "$container_id"
+        for attempt in $(seq 1 30); do
+          status="$(docker inspect --format '{{if .State.Health}}{{.State.Health.Status}}{{else}}starting{{end}}' "$container_id")"
+          if [ "$status" = "healthy" ]; then
+            exit 0
+          fi
+          if [ "$status" = "unhealthy" ]; then
+            docker compose logs --no-color frontend
+            exit 1
+          fi
+          sleep 2
+        done
+        docker compose logs --no-color frontend
+        exit 1

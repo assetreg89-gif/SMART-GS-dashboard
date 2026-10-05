@@ -1,17 +1,14 @@
-# ===================================================================
-# STAGE 1: Install Dependencies
-# ===================================================================
-FROM node:20-alpine AS deps
-RUN apk add --no-cache libc6-compat
+# syntax=docker/dockerfile:1.7
+
+# Bun 1.4.2 is the current stable Alpine image at the time of this update.
+FROM oven/bun:1.4.2-alpine AS deps
 WORKDIR /app
 
-COPY package*.json ./
-RUN npm ci
+COPY package.json bun.lock ./
+RUN --mount=type=cache,target=/root/.bun/install/cache \
+    bun install --frozen-lockfile
 
-# ===================================================================
-# STAGE 2: Build Production Bundle Vite
-# ===================================================================
-FROM node:20-alpine AS builder
+FROM oven/bun:1.4.2-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
@@ -32,23 +29,17 @@ ENV VITE_SUPABASE_URL=$VITE_SUPABASE_URL
 ENV VITE_SUPABASE_ANON_KEY=$VITE_SUPABASE_ANON_KEY
 ENV VITE_SHEETS_WEBAPP_URL=$VITE_SHEETS_WEBAPP_URL
 
-# Build frontend production bundle
-RUN npm run build
+RUN bun run build
 
-# ===================================================================
-# STAGE 3: Production Runner dengan Nginx Alpine
-# ===================================================================
-FROM nginx:alpine AS runner
+# Nginx stable pinned to an explicit Nginx and Alpine version.
+FROM nginx:1.30.5-alpine3.24 AS runner
 WORKDIR /usr/share/nginx/html
 
-# Bersihkan default html
-RUN rm -rf ./*
-
-# Copy hasil build dari Stage 2
 COPY --from=builder /app/dist ./
-
-# Copy konfigurasi Nginx SPA
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+    CMD wget -q -O /dev/null http://127.0.0.1/health || exit 1
+
 CMD ["nginx", "-g", "daemon off;"]

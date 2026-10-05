@@ -32,6 +32,10 @@ const keycloakConfig = {
 
 export const keycloak = new Keycloak(keycloakConfig);
 
+// React StrictMode runs effects twice in development. Keycloak permits one
+// initialization per instance, so concurrent callers must share one promise.
+let initializationPromise;
+
 const getRedirectUri = () => {
   const customRedirect = import.meta.env.VITE_KEYCLOAK_REDIRECT_URI || import.meta.env.VITE_KEYCLOAK_REDIRECT_URL;
   if (customRedirect && customRedirect.trim() !== '') {
@@ -45,18 +49,21 @@ const getRedirectUri = () => {
 };
 
 export const initKeycloak = async () => {
-  try {
-    const authenticated = await keycloak.init({
-      onLoad: 'check-sso',
+  if (!initializationPromise) {
+    initializationPromise = keycloak.init({
       pkceMethod: 'S256',
-      checkLoginIframe: false,
-      silentCheckSsoRedirectUri: `${window.location.origin}/silent-check-sso.html`
+      // auth.treg3.com intentionally disallows framing (frame-ancestors 'self').
+      // The Login button begins the OIDC authorization flow as a top-level navigation.
+      checkLoginIframe: false
+    }).catch((error) => {
+      // Allow a later explicit login attempt after a transient network failure.
+      initializationPromise = undefined;
+      console.warn('Keycloak Server belum dapat dihubungi:', error);
+      return false;
     });
-    return authenticated;
-  } catch (error) {
-    console.warn('Keycloak Server belum dapat dihubungi (akan menggunakan mode fallback/simulator):', error);
-    return false;
   }
+
+  return initializationPromise;
 };
 
 export const loginWithKeycloakGoogle = () => {

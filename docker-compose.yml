@@ -1,10 +1,7 @@
-version: '3.8'
-
 services:
   # 1. DATABASE POSTGRESQL (Auto-init tabel users, rooms, bookings)
   postgres:
     image: postgres:15-alpine
-    container_name: smart_gs_postgres
     restart: always
     environment:
       POSTGRES_DB: ${DB_NAME:-smart_gs_db}
@@ -18,32 +15,10 @@ services:
     networks:
       - smart_gs_network
 
-  # 2. SERVER KEYCLOAK (IAM / SSO + Auto Import Realm & Google Identity Provider)
-  keycloak:
-    image: quay.io/keycloak/keycloak:24.0
-    container_name: smart_gs_keycloak
-    restart: always
-    command: start-dev --import-realm
-    environment:
-      KC_DB: postgres
-      KC_DB_URL: jdbc:postgresql://postgres:5432/${DB_NAME:-smart_gs_db}
-      KC_DB_USERNAME: ${DB_USER:-smart_gs_admin}
-      KC_DB_PASSWORD: ${DB_PASSWORD:-TelkomRegional3_GS2026!}
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin_telkom_2026
-      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
-      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
-    volumes:
-      - ./keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json
-    ports:
-      - "8080:8080"
-    depends_on:
-      - postgres
-    networks:
-      - smart_gs_network
-
-  # 3. WEB FRONTEND SMART GS PORTAL (React + Nginx)
+  # 2. WEB FRONTEND SMART GS PORTAL (React + Nginx)
+  # Authentication is provided by the shared Keycloak deployment at auth.treg3.com.
   frontend:
+    image: ${IMAGE_NAME:-smart-gs-dashboard}:${IMAGE_TAG:-latest}
     build:
       context: .
       dockerfile: Dockerfile
@@ -55,12 +30,17 @@ services:
         VITE_SUPABASE_URL: ${VITE_SUPABASE_URL}
         VITE_SUPABASE_ANON_KEY: ${VITE_SUPABASE_ANON_KEY}
         VITE_SHEETS_WEBAPP_URL: ${VITE_SHEETS_WEBAPP_URL}
-    container_name: smart_gs_frontend
-    restart: always
+    restart: unless-stopped
     ports:
       - "${PORT:-14071}:80"
     networks:
       - smart_gs_network
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1/health || exit 1"]
+      interval: 30s
+      timeout: 3s
+      start_period: 10s
+      retries: 3
 
 networks:
   smart_gs_network:
