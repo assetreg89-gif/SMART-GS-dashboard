@@ -1,8 +1,10 @@
 # syntax=docker/dockerfile:1.7
 
 # Bun 1.4.2 is the current stable Alpine image at the time of this update.
+# Upgrade Alpine packages in every stage so the final image ships with the latest patched OS libraries.
 FROM oven/bun:1.4.2-alpine AS deps
 WORKDIR /app
+RUN apk update && apk upgrade --no-cache && rm -rf /var/cache/apk/*
 
 COPY package.json bun.lock ./
 RUN --mount=type=cache,target=/root/.bun/install/cache \
@@ -10,6 +12,7 @@ RUN --mount=type=cache,target=/root/.bun/install/cache \
 
 FROM oven/bun:1.4.2-alpine AS builder
 WORKDIR /app
+RUN apk update && apk upgrade --no-cache && rm -rf /var/cache/apk/*
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
@@ -32,8 +35,10 @@ ENV VITE_SHEETS_WEBAPP_URL=$VITE_SHEETS_WEBAPP_URL
 RUN bun run build
 
 # Nginx stable pinned to an explicit Nginx and Alpine version.
+# Upgrade Alpine packages in the runtime stage too so the final image ships without known OS vulnerabilities.
 FROM nginx:1.30.5-alpine3.24 AS runner
 WORKDIR /usr/share/nginx/html
+RUN apk update && apk upgrade --no-cache && rm -rf /var/cache/apk/*
 
 COPY --from=builder /app/dist ./
 COPY nginx.conf /etc/nginx/conf.d/default.conf
