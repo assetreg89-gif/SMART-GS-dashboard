@@ -2,15 +2,15 @@ import Keycloak from 'keycloak-js';
 
 // Parse issuer jika tersedia (misal: https://auth.treg3.com/auth/realms/smart atau https://auth.treg3.com/realms/smart)
 const issuer = import.meta.env.VITE_KEYCLOAK_ISSUER;
-let defaultUrl = import.meta.env.VITE_KEYCLOAK_URL || 'https://auth.treg3.com/auth';
-let defaultRealm = import.meta.env.VITE_KEYCLOAK_REALM || 'smart';
+let defaultUrl = import.meta.env.VITE_KEYCLOAK_URL || 'https://auth.treg3.com';
+let defaultRealm = import.meta.env.VITE_KEYCLOAK_REALM || 'hive';
 
 if (issuer) {
   try {
     const parsed = new URL(issuer);
     const parts = parsed.pathname.split('/').filter(Boolean);
     const realmsIndex = parts.indexOf('realms');
-    
+
     if (realmsIndex !== -1 && parts[realmsIndex + 1]) {
       defaultRealm = parts[realmsIndex + 1];
       // Ambil path prefix sebelum 'realms' (misal: /auth)
@@ -33,19 +33,14 @@ const keycloakConfig = {
 export const keycloak = new Keycloak(keycloakConfig);
 
 const getRedirectUri = () => {
-  const customRedirect = import.meta.env.VITE_KEYCLOAK_REDIRECT_URI;
-  
-  // Jika di domain produksi (bukan localhost), selalu gunakan origin domain produksi
-  if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-    return window.location.origin;
-  }
-
+  const customRedirect = import.meta.env.VITE_KEYCLOAK_REDIRECT_URI || import.meta.env.VITE_KEYCLOAK_REDIRECT_URL;
   if (customRedirect && customRedirect.trim() !== '') {
     if (customRedirect.startsWith('/')) {
       return `${window.location.origin}${customRedirect}`;
     }
     return customRedirect;
   }
+
   return window.location.origin;
 };
 
